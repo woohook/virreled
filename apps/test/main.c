@@ -1,6 +1,6 @@
-//gcc -o window.so --shared ../../modules/x11win/x11win.c
-//gcc -o input.so --shared ../../modules/x11input/x11input.c
-//gcc -o testapp -lX11 ./window.so ./input.so main.c
+//gcc -o window.so --shared -lX11 ../../modules/x11win/x11win.c
+//gcc -o input.so --shared -lX11 ../../modules/x11input/x11input.c
+//gcc -o testapp ./window.so ./input.so main.c
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
