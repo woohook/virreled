@@ -6,15 +6,16 @@
 
 extern Display *g_display;
 extern Window   g_window;
+extern unsigned long g_windowAttributesMask;
+extern XSetWindowAttributes g_windowAttributes;
 
 extern int g_keepRunning;
 
 void input_initialize()
 {
-  XSetWindowAttributes attributes;
-  attributes.event_mask = KeyPressMask | KeyReleaseMask;
-
-  XChangeWindowAttributes(g_display, g_window, CWEventMask, &attributes);
+  // configure upcoming window for input processing
+  g_windowAttributesMask |= CWEventMask;
+  g_windowAttributes.event_mask |= KeyPressMask | KeyReleaseMask;
 }
 
 void input_processEvent(XEvent event)

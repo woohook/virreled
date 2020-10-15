@@ -2,24 +2,42 @@
 
 #include <X11/Xlib.h>
 
-Display *g_display = 0;
-int      g_screen  = 0;
-Window   g_window  = 0;
+Display*             g_display              = 0;
+int                  g_screen               = 0;
+Visual*              g_visual               = CopyFromParent;
+Window               g_window               = 0;
+unsigned long        g_windowAttributesMask = 0;
+XSetWindowAttributes g_windowAttributes;
 
-void window_initialize()
+void createMainWindow()
 {
-  g_display = XOpenDisplay(NULL);
-  g_screen = DefaultScreen(g_display);
-
-  g_window = XCreateSimpleWindow(g_display, RootWindow(g_display, g_screen),50,50,300,200,0,4,127);
+  g_window = XCreateWindow(g_display, RootWindow(g_display, g_screen),
+                           50,50,300,200,0,CopyFromParent,InputOutput,
+                           g_visual,g_windowAttributesMask,&g_windowAttributes);
 
   XMapWindow(g_display, g_window);
   XSync(g_display, g_window);
 }
 
+void window_initialize()
+{
+  g_windowAttributes.background_pixel = 127;
+  g_windowAttributesMask |= CWBackPixel;
+
+  g_display = XOpenDisplay(NULL);
+  g_screen = DefaultScreen(g_display);
+}
+
 void window_processFrame()
 {
-  XSync (g_display,0);
+  if(g_window == 0)
+  {
+    createMainWindow();
+  }
+  else
+  {
+    XSync (g_display,0);
+  }
 }
 
 void window_deinitialize()
