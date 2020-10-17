@@ -5,6 +5,8 @@
 Display*             g_display              = 0;
 int                  g_screen               = 0;
 Visual*              g_visual               = CopyFromParent;
+int                  g_width                = 320;
+int                  g_height               = 240;
 Window               g_window               = 0;
 unsigned long        g_windowAttributesMask = 0;
 XSetWindowAttributes g_windowAttributes;
@@ -12,8 +14,8 @@ XSetWindowAttributes g_windowAttributes;
 void createMainWindow()
 {
   g_window = XCreateWindow(g_display, RootWindow(g_display, g_screen),
-                           50,50,300,200,0,CopyFromParent,InputOutput,
-                           g_visual,g_windowAttributesMask,&g_windowAttributes);
+                           50, 50, g_width, g_height, 0, CopyFromParent, InputOutput,
+                           g_visual, g_windowAttributesMask, &g_windowAttributes);
 
   XMapWindow(g_display, g_window);
   XSync(g_display, g_window);
