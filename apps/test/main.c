@@ -1,8 +1,8 @@
-//gcc -o window.so --shared -lX11 ../../modules/x11win/x11win.c
-//gcc -o input.so --shared -lX11 ../../modules/x11input/x11input.c
-//gcc -o render.so --shared -lGL ../../modules/glxrender/glxrender.c
-//gcc -o scene.so --shared -lGL ../../modules/glscene/glscene.c
-//gcc -o testapp ./window.so ./input.so ./render.so ./scene.so main.c
+//gcc -o window.so --shared -fpic ../../modules/x11win/x11win.c -lX11
+//gcc -o input.so  --shared -fpic ../../modules/x11input/x11input.c -lX11
+//gcc -o render.so --shared -fpic ../../modules/glxrender/glxrender.c -lGL
+//gcc -o scene.so  --shared -fpic ../../modules/glscene/glscene.c -lGL
+//gcc -o testapp main.c ./window.so ./input.so ./render.so ./scene.so
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
