@@ -1,41 +1,66 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#include <stdlib.h>
+#include <stdio.h>
 #include <GL/gl.h>
+
+struct vertex
+{
+  float x, y, z, red, green, blue;
+};
+
+struct vertex g_vertices[100];
+int           g_vertex_count = 0;
 
 void model_load()
 {
+  FILE* modelfile = fopen("model.txt", "r");
+  int   matchcount = 0;
+
+  if(modelfile == 0)
+  {
+    printf("ERROR: model.txt could not be opened\n");
+    return;
+  }
+
+  while(g_vertex_count < 100)
+  {
+    char *line = 0;
+    matchcount = fscanf(modelfile, "%m[^\n]*", &line);
+    fscanf(modelfile, "\n");
+    if (matchcount == 1)
+    {
+      struct vertex* v = &g_vertices[g_vertex_count];
+      if(6 == sscanf(line, "v %f %f %f %f %f %f", &v->x, &v->y, &v->z, &v->red, &v->green, &v->blue))
+      {
+        ++g_vertex_count;
+      }
+      free(line);
+      line = 0;
+    }
+    else if (matchcount == EOF)
+    {
+      break;
+    }
+  }
+
+  if(g_vertex_count == 0)
+  {
+    printf("ERROR: Model was not loaded\n");
+  }
+
+  fclose(modelfile);
 }
 
 void model_render()
 {
   glBegin (GL_TRIANGLES);
 
-  glColor3f (1,0,0);
-  glVertex3f (0,-0.1,0);
-  glVertex3f (3,0,0);
-  glVertex3f (0,+0.1,0);
-  glColor3f (0.7,0,0);
-  glVertex3f (0,0,-0.1);
-  glVertex3f (3,0,0);
-  glVertex3f (0,0,+0.1);
-
-  glColor3f (0,1,0);
-  glVertex3f (-0.1,0,0);
-  glVertex3f (0,3,0);
-  glVertex3f (+0.1,0,0);
-  glColor3f (0,0.7,0);
-  glVertex3f (0,0,-0.1);
-  glVertex3f (0,3,0);
-  glVertex3f (0,0,+0.1);
-
-  glColor3f (0,0,1);
-  glVertex3f (0,-0.1,0);
-  glVertex3f (0,0,3);
-  glVertex3f (0,+0.1,0);
-  glColor3f (0,0,0.7);
-  glVertex3f (-0.1,0,0);
-  glVertex3f (0,0,3);
-  glVertex3f (+0.1,0,0);
+  for(int i = 0; i < g_vertex_count; ++i)
+  {
+    glColor3f(g_vertices[i].red, g_vertices[i].green, g_vertices[i].blue);
+    glVertex3f(g_vertices[i].x, g_vertices[i].y, g_vertices[i].z);
+  }
 
   glEnd();
 }
