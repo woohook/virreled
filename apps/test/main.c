@@ -30,7 +30,7 @@ int main(int argc, char** argv)
   window_initialize();
   input_initialize();
   render_initialize();
-  render_initialize();
+  scene_initialize();
 
   while (g_keepRunning) {
     window_processFrame();
