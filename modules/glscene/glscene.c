@@ -5,8 +5,12 @@
 extern int g_width;
 extern int g_height;
 
+void model_load();
+void model_render();
+
 void scene_initialize()
 {
+  model_load();
 }
 
 void scene_processFrame()
@@ -41,36 +45,7 @@ void scene_processFrame()
   glCullFace (GL_BACK);
   glFrontFace (GL_CCW);
 
-  glBegin (GL_TRIANGLES);
-
-  glColor3f (1,0,0);
-  glVertex3f (0,-0.1,0);
-  glVertex3f (3,0,0);
-  glVertex3f (0,+0.1,0);
-  glColor3f (0.7,0,0);
-  glVertex3f (0,0,-0.1);
-  glVertex3f (3,0,0);
-  glVertex3f (0,0,+0.1);
-
-  glColor3f (0,1,0);
-  glVertex3f (-0.1,0,0);
-  glVertex3f (0,3,0);
-  glVertex3f (+0.1,0,0);
-  glColor3f (0,0.7,0);
-  glVertex3f (0,0,-0.1);
-  glVertex3f (0,3,0);
-  glVertex3f (0,0,+0.1);
-
-  glColor3f (0,0,1);
-  glVertex3f (0,-0.1,0);
-  glVertex3f (0,0,3);
-  glVertex3f (0,+0.1,0);
-  glColor3f (0,0,0.7);
-  glVertex3f (-0.1,0,0);
-  glVertex3f (0,0,3);
-  glVertex3f (+0.1,0,0);
-
-  glEnd();
+  model_render();
 
   glFlush();
 }

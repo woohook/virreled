@@ -1,7 +1,7 @@
 //gcc -o window.so --shared -fpic ../../modules/x11win/x11win.c -lX11
 //gcc -o input.so  --shared -fpic ../../modules/x11input/x11input.c -lX11
 //gcc -o render.so --shared -fpic ../../modules/glxrender/glxrender.c -lGL
-//gcc -o scene.so  --shared -fpic ../../modules/glscene/glscene.c -lGL
+//gcc -o scene.so  --shared -fpic ../../modules/glscene/glscene.c ../../modules/glscene/glmodel.c -lGL
 //gcc -o testapp main.c ./window.so ./input.so ./render.so ./scene.so
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
