@@ -9,8 +9,16 @@ struct vertex
   float x, y, z;
 };
 
+struct face
+{
+  int v1, v2, v3;
+};
+
 struct vertex g_vertices[100];
 int           g_vertex_count = 0;
+
+struct face g_faces[100];
+int         g_face_count = 0;
 
 void model_load()
 {
@@ -35,6 +43,13 @@ void model_load()
       {
         ++g_vertex_count;
       }
+
+      struct face* f = &g_faces[g_face_count];
+      if(3 == sscanf(line, "f %d %d %d", &f->v1, &f->v2, &f->v3))
+      {
+        ++g_face_count;
+      }
+
       free(line);
       line = 0;
     }
@@ -46,7 +61,12 @@ void model_load()
 
   if(g_vertex_count == 0)
   {
-    printf("ERROR: No model vertices were not loaded\n");
+    printf("ERROR: No model vertices were loaded\n");
+  }
+
+  if(g_face_count == 0)
+  {
+    printf("ERROR: No model faces were loaded\n");
   }
 
   fclose(modelfile);
@@ -56,9 +76,15 @@ void model_render()
 {
   glBegin (GL_TRIANGLES);
 
-  for(int i = 0; i < g_vertex_count; ++i)
+  for(int i = 0; i < g_face_count; ++i)
   {
-    glVertex3f(g_vertices[i].x, g_vertices[i].y, g_vertices[i].z);
+    struct face*   f  = &g_faces[i];
+    struct vertex* v1 = &g_vertices[f->v1 - 1];
+    struct vertex* v2 = &g_vertices[f->v2 - 1];
+    struct vertex* v3 = &g_vertices[f->v3 - 1];
+    glVertex3f(v1->x, v1->y, v1->z);
+    glVertex3f(v2->x, v2->y, v2->z);
+    glVertex3f(v3->x, v3->y, v3->z);
   }
 
   glEnd();
