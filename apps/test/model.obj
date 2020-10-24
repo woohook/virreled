@@ -24,9 +24,22 @@ v -0.1 0 0
 v 0 0 3
 v 0.1 0 0
 
+mtllib materials.mtl
+
+usemtl 1
 f 1 2 3
+
+usemtl 2
 f 4 5 6
+
+usemtl 3
 f 7 8 9
+
+usemtl 4
 f 10 11 12
+
+usemtl 5
 f 13 14 15
+
+usemtl 6
 f 16 17 18

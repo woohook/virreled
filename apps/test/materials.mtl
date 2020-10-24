@@ -1,0 +1,17 @@
+newmtl 1
+Kd 1 0 0
+
+newmtl 2
+Kd 0.7 0 0
+
+newmtl 3
+Kd 0 1 0
+
+newmtl 4
+Kd 0 0.7 0
+
+newmtl 5
+Kd 0 0 1
+
+newmtl 6
+Kd 0 0 0.7
