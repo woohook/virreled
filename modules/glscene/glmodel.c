@@ -6,7 +6,7 @@
 
 struct vertex
 {
-  float x, y, z, red, green, blue;
+  float x, y, z;
 };
 
 struct vertex g_vertices[100];
@@ -14,12 +14,12 @@ int           g_vertex_count = 0;
 
 void model_load()
 {
-  FILE* modelfile = fopen("model.txt", "r");
+  FILE* modelfile = fopen("model.obj", "r");
   int   matchcount = 0;
 
   if(modelfile == 0)
   {
-    printf("ERROR: model.txt could not be opened\n");
+    printf("ERROR: model.obj could not be opened\n");
     return;
   }
 
@@ -31,7 +31,7 @@ void model_load()
     if (matchcount == 1)
     {
       struct vertex* v = &g_vertices[g_vertex_count];
-      if(6 == sscanf(line, "v %f %f %f %f %f %f", &v->x, &v->y, &v->z, &v->red, &v->green, &v->blue))
+      if(3 == sscanf(line, "v %f %f %f", &v->x, &v->y, &v->z))
       {
         ++g_vertex_count;
       }
@@ -46,7 +46,7 @@ void model_load()
 
   if(g_vertex_count == 0)
   {
-    printf("ERROR: Model was not loaded\n");
+    printf("ERROR: No model vertices were not loaded\n");
   }
 
   fclose(modelfile);
@@ -58,7 +58,6 @@ void model_render()
 
   for(int i = 0; i < g_vertex_count; ++i)
   {
-    glColor3f(g_vertices[i].red, g_vertices[i].green, g_vertices[i].blue);
     glVertex3f(g_vertices[i].x, g_vertices[i].y, g_vertices[i].z);
   }
 
