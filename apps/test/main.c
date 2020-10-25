@@ -25,7 +25,7 @@ void scene_initialize();
 void scene_processFrame();
 void scene_deinitialize();
 
-void model_load(const char* filename);
+void model_load(const char* filename, float x, float y, float z);
 
 int main(int argc, char** argv)
 {
@@ -34,7 +34,8 @@ int main(int argc, char** argv)
   render_initialize();
   scene_initialize();
 
-  model_load("model.obj");
+  model_load("model.obj", 0, 0, 0);
+  model_load("arrow.obj", 1, 0, 0);
 
   while (g_keepRunning) {
     window_processFrame();

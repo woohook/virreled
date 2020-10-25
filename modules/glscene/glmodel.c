@@ -30,6 +30,8 @@ struct model
 
   struct face faces[100];
   int         face_count;
+
+  float x, y, z;
 };
 
 struct model g_models[10];
@@ -79,11 +81,14 @@ void materials_load(struct model* pModel, const char* filename)
   fclose(materialsfile);
 }
 
-void model_load(const char* filename)
+void model_load(const char* filename, float x, float y, float z)
 {
   struct model* pModel = &g_models[g_model_count];
   pModel->vertex_count = 0;
   pModel->face_count = 0;
+  pModel->x = x;
+  pModel->y = y;
+  pModel->z = z;
 
   pModel->materials[0].red   = 1;
   pModel->materials[0].green = 0;
@@ -160,13 +165,22 @@ void model_load(const char* filename)
   ++g_model_count;
 }
 
-void model_render()
+void model_render(float cam_x, float cam_y, float cam_z, float rotX, float rotY, float rotZ)
 {
-  glBegin (GL_TRIANGLES);
+  glMatrixMode (GL_MODELVIEW);
 
   for(int modelId = 0; modelId < g_model_count; ++modelId)
   {
     struct model* pModel = &g_models[modelId];
+
+    glLoadIdentity();
+    glTranslatef(pModel->x, pModel->y, pModel->z);
+    glRotatef (rotX, 1,0,0);
+    glRotatef (rotY, 0,1,0);
+    glRotatef (rotZ, 0,0,1);
+    glTranslatef (-cam_x, -cam_y, -cam_z);
+
+    glBegin (GL_TRIANGLES);
 
     for(int i = 0; i < pModel->face_count; ++i)
     {
@@ -180,7 +194,7 @@ void model_render()
       glVertex3f(v2->x, v2->y, v2->z);
       glVertex3f(v3->x, v3->y, v3->z);
     }
-  }
 
-  glEnd();
+    glEnd();
+  }
 }

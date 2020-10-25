@@ -5,7 +5,7 @@
 extern int g_width;
 extern int g_height;
 
-void model_render();
+void model_render(float cam_x, float cam_y, float cam_z, float rotX, float rotY, float rotZ);
 
 void scene_initialize()
 {
@@ -30,12 +30,7 @@ void scene_processFrame()
 
   float cam_x     = 1.0;  // left
   float cam_y     = 0.75;  // up
-  float cam_z     = -2.0;  // forward/back (+/-)
-
-  glMatrixMode (GL_MODELVIEW);
-  glLoadIdentity();
-  glRotatef (180, 0,1,0);  // look forward towards +z
-  glTranslatef (-cam_x,-cam_y,-cam_z);
+  float cam_z     = 4.0;  // forward/back (+/-)
 
   glEnable (GL_DEPTH_TEST);
   glDisable (GL_TEXTURE_2D);
@@ -43,7 +38,7 @@ void scene_processFrame()
   glCullFace (GL_BACK);
   glFrontFace (GL_CCW);
 
-  model_render();
+  model_render(cam_x, cam_y, cam_z, 0, 0, 0);
 
   glFlush();
 }
