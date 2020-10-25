@@ -25,12 +25,16 @@ void scene_initialize();
 void scene_processFrame();
 void scene_deinitialize();
 
+void model_load(const char* filename);
+
 int main(int argc, char** argv)
 {
   window_initialize();
   input_initialize();
   render_initialize();
   scene_initialize();
+
+  model_load("model.obj");
 
   while (g_keepRunning) {
     window_processFrame();

@@ -5,12 +5,10 @@
 extern int g_width;
 extern int g_height;
 
-void model_load();
 void model_render();
 
 void scene_initialize()
 {
-  model_load();
 }
 
 void scene_processFrame()

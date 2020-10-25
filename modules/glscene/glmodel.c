@@ -79,7 +79,7 @@ void materials_load(struct model* pModel, const char* filename)
   fclose(materialsfile);
 }
 
-void model_load()
+void model_load(const char* filename)
 {
   struct model* pModel = &g_models[g_model_count];
   pModel->vertex_count = 0;
@@ -91,7 +91,7 @@ void model_load()
   pModel->material_count = 1;
   pModel->current_material = 0;
 
-  FILE* modelfile = fopen("model.obj", "r");
+  FILE* modelfile = fopen(filename, "r");
   int   matchcount = 0;
 
   if(modelfile == 0)
