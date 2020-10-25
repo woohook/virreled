@@ -19,17 +19,23 @@ struct face
   int v1, v2, v3, material;
 };
 
-struct vertex g_vertices[100];
-int           g_vertex_count = 0;
+struct model
+{
+  struct vertex vertices[100];
+  int           vertex_count;
 
-struct material g_materials[100];
-int             g_material_count   = 0;
-int             g_current_material = 0;
+  struct material materials[100];
+  int             material_count;
+  int             current_material;
 
-struct face g_faces[100];
-int         g_face_count = 0;
+  struct face faces[100];
+  int         face_count;
+};
 
-void materials_load(const char* filename)
+struct model g_models[10];
+int          g_model_count;
+
+void materials_load(struct model* pModel, const char* filename)
 {
   FILE* materialsfile  = fopen(filename, "r");
   int   matchcount     = 0;
@@ -41,14 +47,14 @@ void materials_load(const char* filename)
     return;
   }
 
-  while(g_material_count < 100)
+  while(material_count < 100)
   {
     char *line = 0;
     matchcount = fscanf(materialsfile, "%m[^\n]*", &line);
     fscanf(materialsfile, "\n");
     if (matchcount == 1)
     {
-      struct material* m = &g_materials[g_material_count + material_count];
+      struct material* m = &pModel->materials[pModel->material_count + material_count];
       if(3 == sscanf(line, "Kd %f %f %f", &m->red, &m->green, &m->blue))
       {
         ++material_count;
@@ -63,7 +69,7 @@ void materials_load(const char* filename)
     }
   }
 
-  g_material_count = g_material_count + material_count;
+  pModel->material_count = pModel->material_count + material_count;
 
   if(material_count == 0)
   {
@@ -75,13 +81,15 @@ void materials_load(const char* filename)
 
 void model_load()
 {
-  if(g_material_count == 0)
-  {
-    g_materials[0].red = 1;
-    g_materials[0].green = 0;
-    g_materials[0].blue  = 1;
-    ++g_material_count;
-  }
+  struct model* pModel = &g_models[g_model_count];
+  pModel->vertex_count = 0;
+  pModel->face_count = 0;
+
+  pModel->materials[0].red   = 1;
+  pModel->materials[0].green = 0;
+  pModel->materials[0].blue  = 1;
+  pModel->material_count = 1;
+  pModel->current_material = 0;
 
   FILE* modelfile = fopen("model.obj", "r");
   int   matchcount = 0;
@@ -92,7 +100,7 @@ void model_load()
     return;
   }
 
-  while(g_vertex_count < 100)
+  while(pModel->vertex_count < 100)
   {
     char *line     = 0;
     char* filename = 0;
@@ -101,22 +109,22 @@ void model_load()
     fscanf(modelfile, "\n");
     if (matchcount == 1)
     {
-      struct vertex* v = &g_vertices[g_vertex_count];
+      struct vertex* v = &pModel->vertices[pModel->vertex_count];
       if(3 == sscanf(line, "v %f %f %f", &v->x, &v->y, &v->z))
       {
-        ++g_vertex_count;
+        ++pModel->vertex_count;
       }
 
-      struct face* f = &g_faces[g_face_count];
+      struct face* f = &pModel->faces[pModel->face_count];
       if(3 == sscanf(line, "f %d %d %d", &f->v1, &f->v2, &f->v3))
       {
-        f->material = g_current_material;
-        ++g_face_count;
+        f->material = pModel->current_material;
+        ++pModel->face_count;
       }
 
       if(1 == sscanf(line, "mtllib %m[^\n]*", &filename))
       {
-        materials_load(filename);
+        materials_load(pModel, filename);
 
         free(filename);
         filename = 0;
@@ -125,7 +133,7 @@ void model_load()
       int current_material = 0;
       if(1 == sscanf(line, "usemtl %d", &current_material))
       {
-        g_current_material = current_material;
+        pModel->current_material = current_material;
       }
 
       free(line);
@@ -137,34 +145,41 @@ void model_load()
     }
   }
 
-  if(g_vertex_count == 0)
+  if(pModel->vertex_count == 0)
   {
     printf("ERROR: No model vertices were loaded\n");
   }
 
-  if(g_face_count == 0)
+  if(pModel->face_count == 0)
   {
     printf("ERROR: No model faces were loaded\n");
   }
 
   fclose(modelfile);
+
+  ++g_model_count;
 }
 
 void model_render()
 {
   glBegin (GL_TRIANGLES);
 
-  for(int i = 0; i < g_face_count; ++i)
+  for(int modelId = 0; modelId < g_model_count; ++modelId)
   {
-    struct face*   f   = &g_faces[i];
-    struct material* m = &g_materials[f->material];
-    struct vertex* v1  = &g_vertices[f->v1 - 1];
-    struct vertex* v2  = &g_vertices[f->v2 - 1];
-    struct vertex* v3  = &g_vertices[f->v3 - 1];
-    glColor3f(m->red, m->green, m->blue);
-    glVertex3f(v1->x, v1->y, v1->z);
-    glVertex3f(v2->x, v2->y, v2->z);
-    glVertex3f(v3->x, v3->y, v3->z);
+    struct model* pModel = &g_models[modelId];
+
+    for(int i = 0; i < pModel->face_count; ++i)
+    {
+      struct face*   f   = &pModel->faces[i];
+      struct material* m = &pModel->materials[f->material];
+      struct vertex* v1  = &pModel->vertices[f->v1 - 1];
+      struct vertex* v2  = &pModel->vertices[f->v2 - 1];
+      struct vertex* v3  = &pModel->vertices[f->v3 - 1];
+      glColor3f(m->red, m->green, m->blue);
+      glVertex3f(v1->x, v1->y, v1->z);
+      glVertex3f(v2->x, v2->y, v2->z);
+      glVertex3f(v3->x, v3->y, v3->z);
+    }
   }
 
   glEnd();
