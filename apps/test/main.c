@@ -1,7 +1,7 @@
 //gcc -o window.so --shared -fpic ../../modules/x11win/x11win.c -lX11
 //gcc -o input.so  --shared -fpic ../../modules/x11input/x11input.c -lX11
 //gcc -o render.so --shared -fpic ../../modules/glxrender/glxrender.c -lGL
-//gcc -o scene.so  --shared -fpic ../../modules/glscene/glscene.c ../../modules/glscene/glmodel.c -lGL
+//gcc -o scene.so  --shared -fpic ../../modules/glscene/glscene.c ../../modules/glscene/glmodel.c ../../modules/glscene/sceneloader.c -lGL
 //gcc -o testapp main.c ./window.so ./input.so ./render.so ./scene.so
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
@@ -25,7 +25,7 @@ void scene_initialize();
 void scene_processFrame();
 void scene_deinitialize();
 
-void model_load(const char* filename, float x, float y, float z);
+void scene_load(const char* filename);
 
 int main(int argc, char** argv)
 {
@@ -34,8 +34,7 @@ int main(int argc, char** argv)
   render_initialize();
   scene_initialize();
 
-  model_load("model.obj", 0, 0, 0);
-  model_load("arrow.obj", 1, 0, 0);
+  scene_load("test.scene");
 
   while (g_keepRunning) {
     window_processFrame();

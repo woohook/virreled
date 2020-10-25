@@ -1,0 +1,3 @@
+model model.obj 0 0 0
+model arrow.obj 1 0 1
+camera 1.0 0.75 4.0 0 0 0

@@ -34,7 +34,9 @@ struct model
   float x, y, z;
 };
 
-struct model g_models[10];
+#define      MODEL_COUNT_MAX 10
+const int    g_model_count_max = MODEL_COUNT_MAX;
+struct model g_models[MODEL_COUNT_MAX];
 int          g_model_count;
 
 void materials_load(struct model* pModel, const char* filename)
