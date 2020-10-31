@@ -32,6 +32,7 @@ struct model
   int         face_count;
 
   float x, y, z;
+  float rx, ry, rz;
 };
 
 #define      MODEL_COUNT_MAX 10
@@ -83,7 +84,7 @@ void materials_load(struct model* pModel, const char* filename)
   fclose(materialsfile);
 }
 
-void model_load(const char* filename, float x, float y, float z)
+void model_load(const char* filename, float x, float y, float z, float rx, float ry, float rz)
 {
   struct model* pModel = &g_models[g_model_count];
   pModel->vertex_count = 0;
@@ -91,6 +92,9 @@ void model_load(const char* filename, float x, float y, float z)
   pModel->x = x;
   pModel->y = y;
   pModel->z = z;
+  pModel->rx = rx;
+  pModel->ry = ry;
+  pModel->rz = rz;
 
   pModel->materials[0].red   = 1;
   pModel->materials[0].green = 0;
@@ -176,11 +180,15 @@ void model_render(float cam_x, float cam_y, float cam_z, float rotX, float rotY,
     struct model* pModel = &g_models[modelId];
 
     glLoadIdentity();
-    glTranslatef(pModel->x, pModel->y, pModel->z);
+
+    glTranslatef (-cam_x, -cam_y, -cam_z);
     glRotatef (rotX, 1,0,0);
     glRotatef (rotY, 0,1,0);
     glRotatef (rotZ, 0,0,1);
-    glTranslatef (-cam_x, -cam_y, -cam_z);
+    glTranslatef(pModel->x, pModel->y, pModel->z);
+    glRotatef (pModel->rx, 1,0,0);
+    glRotatef (pModel->ry, 0,1,0);
+    glRotatef (pModel->rz, 0,0,1);
 
     glBegin (GL_TRIANGLES);
 

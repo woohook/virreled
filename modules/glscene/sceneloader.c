@@ -6,7 +6,7 @@ extern int       g_model_count;
 extern float     g_cam_x, g_cam_y, g_cam_z;
 extern float     g_cam_rx, g_cam_ry, g_cam_rz;
 
-void model_load(const char* filename, float x, float y, float z);
+void model_load(const char* filename, float x, float y, float z, float rx, float ry, float rz);
 
 void scene_load(const char* filename)
 {
@@ -29,12 +29,14 @@ void scene_load(const char* filename)
     if (matchcount == 1)
     {
       float x, y, z;
-      float rx, ry, rz;
+      float rx = 0, ry = 0, rz = 0;
       char* model_filename = 0;
+      int offset = 0;
 
-      if(4 == sscanf(line, " model %m[^ ] x=%f y=%f z=%f", &model_filename, &x, &y, &z))
+      if(4 == sscanf(line, " model %m[^ ] x=%f y=%f z=%f%n", &model_filename, &x, &y, &z, &offset))
       {
-        model_load(model_filename, x, y, z);
+        sscanf(&line[offset], " rx=%f ry=%f rz=%f", &rx, &ry, &rz);
+        model_load(model_filename, x, y, z, rx, ry, rz);
         free(model_filename);
         ++model_count;
       }
