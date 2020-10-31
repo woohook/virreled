@@ -103,7 +103,7 @@ void model_load(const char* filename, float x, float y, float z)
 
   if(modelfile == 0)
   {
-    printf("ERROR: model.obj could not be opened\n");
+    printf("ERROR: %s could not be opened\n", filename);
     return;
   }
 
