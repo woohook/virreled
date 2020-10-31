@@ -32,14 +32,14 @@ void scene_load(const char* filename)
       float rx, ry, rz;
       char* model_filename = 0;
 
-      if(4 == sscanf(line, "model %m[^ ] %f %f %f", &model_filename, &x, &y, &z))
+      if(4 == sscanf(line, " model %m[^ ] x=%f y=%f z=%f", &model_filename, &x, &y, &z))
       {
         model_load(model_filename, x, y, z);
         free(model_filename);
         ++model_count;
       }
 
-      if(6 == sscanf(line, "camera %f %f %f %f %f %f", &x, &y, &z, &rx, &ry, &rz))
+      if(6 == sscanf(line, " camera x=%f y=%f z=%f rx=%f ry=%f rz=%f", &x, &y, &z, &rx, &ry, &rz))
       {
         if(cam_count > 0)
         {
