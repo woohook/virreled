@@ -181,13 +181,28 @@ void model_render(float cam_x, float cam_y, float cam_z, float rotX, float rotY,
 
     glLoadIdentity();
 
-    glTranslatef (-cam_x, -cam_y, -cam_z);
-    glRotatef (rotX, 1,0,0);
-    glRotatef (rotY, 0,1,0);
-    glRotatef (rotZ, 0,0,1);
+    // camera offset relative to object
+    glTranslatef(-cam_x, -cam_y, -cam_z);
+
+    // absolute camera rotation
+    //glRotatef (rotZ, 0,0,1);
+    //glRotatef (rotX, 1,0,0);
+    //glRotatef (rotY, 0,1,0);
+
+    // object relative camera rotation
+    glRotatef (g_models[1].rz, 0,0,1);
+    glRotatef (g_models[1].rx, 1,0,0);
+    glRotatef (180 - g_models[1].ry, 0,1,0);
+
+    // move world to view coordinates
+    glTranslatef(-g_models[1].x, -g_models[1].y, -g_models[1].z);
+
+    // move model to world coordinates
     glTranslatef(pModel->x, pModel->y, pModel->z);
-    glRotatef (pModel->rx, 1,0,0);
+
+    // rotate the model
     glRotatef (pModel->ry, 0,1,0);
+    glRotatef (pModel->rx, 1,0,0);
     glRotatef (pModel->rz, 0,0,1);
 
     glBegin (GL_TRIANGLES);
