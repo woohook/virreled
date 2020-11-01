@@ -40,6 +40,10 @@ const int    g_model_count_max = MODEL_COUNT_MAX;
 struct model g_models[MODEL_COUNT_MAX];
 int          g_model_count;
 
+float* g_rx = &g_models[1].rx;
+float* g_ry = &g_models[1].ry;
+float* g_rz = &g_models[1].rz;
+
 void materials_load(struct model* pModel, const char* filename)
 {
   FILE* materialsfile  = fopen(filename, "r");

@@ -11,6 +11,10 @@ extern XSetWindowAttributes g_windowAttributes;
 
 extern int g_keepRunning;
 
+extern float* g_rx;
+extern float* g_ry;
+extern float* g_rz;
+
 void input_initialize()
 {
   // configure upcoming window for input processing
@@ -27,6 +31,24 @@ void input_processEvent(XEvent event)
       switch (key) {
         case 'q':
           g_keepRunning = 0;
+          break;
+        case 'a':
+          *g_ry = *g_ry + 10.0f;
+          break;
+        case 'd':
+          *g_ry = *g_ry - 10.0f;
+          break;
+        case 'w':
+          *g_rx = *g_rx + 10.0f;
+          break;
+        case 's':
+          *g_rx = *g_rx - 10.0f;
+          break;
+        case 'x':
+          *g_rz = *g_rz + 10.0f;
+          break;
+        case 'y':
+          *g_rz = *g_rz - 10.0f;
           break;
         default:
           break;
