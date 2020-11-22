@@ -58,8 +58,8 @@ void materials_load(struct model* pModel, const char* filename)
 
   while(material_count < 100)
   {
-    char *line = 0;
-    matchcount = fscanf(materialsfile, "%m[^\n]*", &line);
+    char line[1024];
+    matchcount = fscanf(materialsfile, "%1023[^\n]*", &line);
     fscanf(materialsfile, "\n");
     if (matchcount == 1)
     {
@@ -69,8 +69,7 @@ void materials_load(struct model* pModel, const char* filename)
         ++material_count;
       }
 
-      free(line);
-      line = 0;
+      line[0] = 0;
     }
     else if (matchcount == EOF)
     {
@@ -117,10 +116,12 @@ void model_load(const char* filename, float x, float y, float z, float rx, float
 
   while(pModel->vertex_count < 100)
   {
-    char *line     = 0;
-    char* filename = 0;
+    char line[1024];
+    line[1023] = 0;
+    char filename[1024];
+    filename[1023] = 0;
 
-    matchcount = fscanf(modelfile, "%m[^\n]*", &line);
+    matchcount = fscanf(modelfile, "%1023[^\n]*", &line);
     fscanf(modelfile, "\n");
     if (matchcount == 1)
     {
@@ -137,12 +138,11 @@ void model_load(const char* filename, float x, float y, float z, float rx, float
         ++pModel->face_count;
       }
 
-      if(1 == sscanf(line, "mtllib %m[^\n]*", &filename))
+      if(1 == sscanf(line, "mtllib %1023[^\n]*", &filename))
       {
         materials_load(pModel, filename);
 
-        free(filename);
-        filename = 0;
+        filename[0] = 0;
       }
 
       int current_material = 0;
@@ -151,8 +151,7 @@ void model_load(const char* filename, float x, float y, float z, float rx, float
         pModel->current_material = current_material;
       }
 
-      free(line);
-      line = 0;
+      line[0] = 0;
     }
     else if (matchcount == EOF)
     {

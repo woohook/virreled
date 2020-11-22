@@ -23,21 +23,21 @@ void scene_load(const char* filename)
 
   while(g_model_count < g_model_count_max)
   {
-    char *line = 0;
-    matchcount = fscanf(file, "%m[^\n]", &line);
+    char line [1024];
+    line[1023] = 0;
+    matchcount = fscanf(file, "%1023[^\n]", &line);
     fscanf(file, "\n");
     if (matchcount == 1)
     {
       float x, y, z;
       float rx = 0, ry = 0, rz = 0;
-      char* model_filename = 0;
+      char model_filename[1024];
       int offset = 0;
 
-      if(4 == sscanf(line, " model %m[^ ] x=%f y=%f z=%f%n", &model_filename, &x, &y, &z, &offset))
+      if(4 == sscanf(line, " model %1023[^ ] x=%f y=%f z=%f%n", &model_filename, &x, &y, &z, &offset))
       {
         sscanf(&line[offset], " rx=%f ry=%f rz=%f", &rx, &ry, &rz);
         model_load(model_filename, x, y, z, rx, ry, rz);
-        free(model_filename);
         ++model_count;
       }
 
@@ -56,8 +56,7 @@ void scene_load(const char* filename)
         g_cam_rz = rz;
       }
 
-      free(line);
-      line = 0;
+      line[0] = 0;
     }
     else if (matchcount == EOF)
     {

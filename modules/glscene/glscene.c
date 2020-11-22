@@ -20,17 +20,18 @@ void scene_initialize()
 
 void scene_processFrame()
 {
+  const float angle     = 0.8f;
+  const float nearPlane = 0.1f;
+  const float farPlane  = 100.0f;
+  const float left      = -angle * nearPlane;
+  const float right     =  angle * nearPlane;
+  const float ratio     = (float)g_height/(float)g_width;
+  const float bottom    = -angle * ratio * nearPlane;
+  const float top       =  angle * ratio * nearPlane;
+
   glMatrixMode (GL_PROJECTION);
   glLoadIdentity();
-  const float angle  = 0.8f;
-  const float ratio  = (float)g_height/(float)g_width;
-  const float near   = 0.1f;
-  const float far    = 100.0f;
-  const float left   = -angle * near;
-  const float right  =  angle * near;
-  const float bottom = -angle * ratio * near;
-  const float top    =  angle * ratio * near;
-  glFrustum(left, right, bottom, top, near, far);
+  glFrustum(left, right, bottom, top, nearPlane, farPlane);
 
   glClearColor (0.0,0.3,0.0,0);
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
