@@ -2,7 +2,8 @@
 //gcc -o input.so  --shared -fpic ../../modules/x11input/x11input.c -lX11
 //gcc -o render.so --shared -fpic ../../modules/glxrender/glxrender.c -lGL
 //gcc -o scene.so  --shared -fpic ../../modules/glscene/glscene.c ../../modules/glscene/glmodel.c ../../modules/glscene/sceneloader.c -lGL
-//gcc -o testapp main.c ./window.so ./input.so ./render.so ./scene.so
+//gcc -o physics.so --shared -fpic -I/usr/include ../../modules/physics-ode/physics-ode.c -lode
+//gcc -o testapp main.c ./window.so ./input.so ./render.so ./scene.so ./physics.so
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -21,6 +22,10 @@ void input_initialize();
 void input_processFrame();
 void input_deinitialize();
 
+void physics_initialize();
+void physics_processFrame();
+void physics_deinitialize();
+
 void scene_initialize();
 void scene_processFrame();
 void scene_deinitialize();
@@ -32,6 +37,7 @@ int main(int argc, char** argv)
   window_initialize();
   input_initialize();
   render_initialize();
+  physics_initialize();
   scene_initialize();
 
   scene_load("test.scene");
@@ -40,11 +46,13 @@ int main(int argc, char** argv)
     window_processFrame();
     input_processFrame();
     render_processFrame();
+    physics_processFrame();
     scene_processFrame();
     render_postProcessFrame();
   }
 
   scene_deinitialize();
+  physics_deinitialize();
   render_deinitialize();
   input_deinitialize();
   window_deinitialize();
