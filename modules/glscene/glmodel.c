@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <GL/gl.h>
 
+extern float g_testobject_height;
+
 struct vertex
 {
   float x, y, z;
@@ -201,7 +203,7 @@ void model_render(float cam_x, float cam_y, float cam_z, float rotX, float rotY,
     glTranslatef(-g_models[1].x, -g_models[1].y, -g_models[1].z);
 
     // move model to world coordinates
-    glTranslatef(pModel->x, pModel->y, pModel->z);
+    glTranslatef(pModel->x, (modelId == 2) ? g_testobject_height : pModel->y, pModel->z);
 
     // rotate the model
     glRotatef (pModel->ry, 0,1,0);
