@@ -1,4 +1,4 @@
-//i686-w64-mingw32-gcc ../../modules/glscene/*.c simplewindow.c -mwindows -lopengl32
+//i686-w64-mingw32-gcc ../../modules/glscene/*.c ../../modules/scene/sceneloader.c simplewindow.c -mwindows -lopengl32
 //*/
 
 #include <windows.h>

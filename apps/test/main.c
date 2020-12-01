@@ -1,9 +1,10 @@
 //gcc -o window.so --shared -fpic ../../modules/x11win/x11win.c -lX11
 //gcc -o input.so  --shared -fpic ../../modules/x11input/x11input.c -lX11
 //gcc -o render.so --shared -fpic ../../modules/glxrender/glxrender.c -lGL
-//gcc -o scene.so  --shared -fpic ../../modules/glscene/glscene.c ../../modules/glscene/glmodel.c ../../modules/glscene/sceneloader.c -lGL
+//gcc -o glscene.so  --shared -fpic ../../modules/glscene/glscene.c ../../modules/glscene/glmodel.c -lGL
+//gcc -o scene.so  --shared -fpic ../../modules/scene/sceneloader.c
 //gcc -o physics.so --shared -fpic -I/usr/include ../../modules/physics-ode/physics-ode.c -lode
-//gcc -o testapp main.c ./window.so ./input.so ./render.so ./scene.so ./physics.so
+//gcc -o testapp main.c ./window.so ./input.so ./render.so ./glscene.so ./scene.so ./physics.so
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
