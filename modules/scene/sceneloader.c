@@ -6,10 +6,16 @@ extern int       g_model_count;
 extern float     g_cam_x, g_cam_y, g_cam_z;
 extern float     g_cam_rx, g_cam_ry, g_cam_rz;
 
-void model_load(const char* filename, float x, float y, float z, float rx, float ry, float rz);
+void model_load(const char* filename, float* position, float rx, float ry, float rz);
 
 void entity_load(const char* filename, float x, float y, float z)
 {
+  struct entity* pEntity = entity_create();
+  float* position = entity_getPosition(pEntity);
+  position[0] = x;
+  position[1] = y;
+  position[2] = z;
+
   FILE* file        = fopen(filename, "r");
   int   matchcount  = 0;
 
@@ -27,15 +33,15 @@ void entity_load(const char* filename, float x, float y, float z)
     fscanf(file, "\n");
     if (matchcount == 1)
     {
-      float x, y, z;
+      float model_x, model_y, model_z;
       float rx = 0, ry = 0, rz = 0;
       char model_filename[1024];
       int offset = 0;
 
-      if(4 == sscanf(line, " model %1023[^ ] x=%f y=%f z=%f%n", &model_filename, &x, &y, &z, &offset))
+      if(4 == sscanf(line, " model %1023[^ ] x=%f y=%f z=%f%n", &model_filename, &model_x, &model_y, &model_z, &offset))
       {
         sscanf(&line[offset], " rx=%f ry=%f rz=%f", &rx, &ry, &rz);
-        model_load(model_filename, x, y, z, rx, ry, rz);
+        model_load(model_filename, position, rx, ry, rz);
       }
 
       line[0] = 0;
@@ -79,13 +85,6 @@ void scene_load(const char* filename)
       if(4 == sscanf(line, " entity %1023[^ ] x=%f y=%f z=%f%n", &entity_filename, &x, &y, &z, &offset))
       {
         entity_load(entity_filename, x, y, z);
-      }
-
-      if(4 == sscanf(line, " model %1023[^ ] x=%f y=%f z=%f%n", &model_filename, &x, &y, &z, &offset))
-      {
-        sscanf(&line[offset], " rx=%f ry=%f rz=%f", &rx, &ry, &rz);
-        model_load(model_filename, x, y, z, rx, ry, rz);
-        ++model_count;
       }
 
       if(6 == sscanf(line, " camera x=%f y=%f z=%f rx=%f ry=%f rz=%f", &x, &y, &z, &rx, &ry, &rz))

@@ -33,7 +33,7 @@ struct model
   struct face faces[100];
   int         face_count;
 
-  float x, y, z;
+  float* position;
   float rx, ry, rz;
 };
 
@@ -89,14 +89,12 @@ void materials_load(struct model* pModel, const char* filename)
   fclose(materialsfile);
 }
 
-void model_load(const char* filename, float x, float y, float z, float rx, float ry, float rz)
+void model_load(const char* filename, float* position, float rx, float ry, float rz)
 {
   struct model* pModel = &g_models[g_model_count];
   pModel->vertex_count = 0;
   pModel->face_count = 0;
-  pModel->x = x;
-  pModel->y = y;
-  pModel->z = z;
+  pModel->position = position;
   pModel->rx = rx;
   pModel->ry = ry;
   pModel->rz = rz;
@@ -200,10 +198,10 @@ void model_render(float cam_x, float cam_y, float cam_z, float rotX, float rotY,
     glRotatef (180 - g_models[1].ry, 0,1,0);
 
     // move world to view coordinates
-    glTranslatef(-g_models[1].x, -g_models[1].y, -g_models[1].z);
+    glTranslatef(-g_models[1].position[0], -g_models[1].position[1], -g_models[1].position[2]);
 
     // move model to world coordinates
-    glTranslatef(pModel->x, (modelId == 2) ? g_testobject_height : pModel->y, pModel->z);
+    glTranslatef(pModel->position[0], (modelId == 2) ? g_testobject_height : pModel->position[1], pModel->position[2]);
 
     // rotate the model
     glRotatef (pModel->ry, 0,1,0);
