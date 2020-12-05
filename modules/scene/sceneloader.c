@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-extern const int g_model_count_max;
-extern int       g_model_count;
+extern const int g_entities_count_max;
+extern int       g_entities_count;
 extern float     g_cam_x, g_cam_y, g_cam_z;
 extern float     g_cam_rx, g_cam_ry, g_cam_rz;
 
@@ -60,10 +60,10 @@ void entity_load(const char* filename, float x, float y, float z)
 
 void scene_load(const char* filename)
 {
-  FILE* file        = fopen(filename, "r");
-  int   matchcount  = 0;
-  int   model_count = 0;
-  int   cam_count   = 0;
+  FILE* file           = fopen(filename, "r");
+  int   matchcount     = 0;
+  int   entities_count = 0;
+  int   cam_count      = 0;
 
   if(file == 0)
   {
@@ -71,7 +71,7 @@ void scene_load(const char* filename)
     return;
   }
 
-  while(g_model_count < g_model_count_max)
+  while(g_entities_count < g_entities_count_max)
   {
     char line [1024];
     line[1023] = 0;
@@ -88,6 +88,7 @@ void scene_load(const char* filename)
       if(4 == sscanf(line, " entity %1023[^ ] x=%f y=%f z=%f%n", &entity_filename, &x, &y, &z, &offset))
       {
         entity_load(entity_filename, x, y, z);
+        ++entities_count;
       }
 
       if(6 == sscanf(line, " camera x=%f y=%f z=%f rx=%f ry=%f rz=%f", &x, &y, &z, &rx, &ry, &rz))
@@ -113,9 +114,9 @@ void scene_load(const char* filename)
     }
   }
 
-  if(model_count == 0)
+  if(entities_count == 0)
   {
-    printf("ERROR: No models were loaded from %s\n", filename);
+    printf("ERROR: No entities were loaded from %s\n", filename);
   }
   if(cam_count == 0)
   {
