@@ -8,6 +8,9 @@ extern float     g_cam_rx, g_cam_ry, g_cam_rz;
 
 void model_load(const char* filename, float* position, float rx, float ry, float rz);
 
+struct entity* entity_create();
+float* entity_getPosition(struct entity*);
+
 void entity_load(const char* filename, float x, float y, float z)
 {
   struct entity* pEntity = entity_create();
