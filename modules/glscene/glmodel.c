@@ -201,7 +201,7 @@ void model_render(float cam_x, float cam_y, float cam_z, float rotX, float rotY,
     glTranslatef(-g_models[1].position[0], -g_models[1].position[1], -g_models[1].position[2]);
 
     // move model to world coordinates
-    glTranslatef(pModel->position[0], (modelId == 2) ? g_testobject_height : pModel->position[1], pModel->position[2]);
+    glTranslatef(pModel->position[0], pModel->position[1], pModel->position[2]);
 
     // rotate the model
     glRotatef (pModel->ry, 0,1,0);

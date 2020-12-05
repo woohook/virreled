@@ -11,6 +11,8 @@ void model_load(const char* filename, float* position, float rx, float ry, float
 struct entity* entity_create();
 float* entity_getPosition(struct entity*);
 
+struct physics_object* physics_createBox(float* position);
+
 void entity_load(const char* filename, float x, float y, float z)
 {
   struct entity* pEntity = entity_create();
@@ -45,6 +47,13 @@ void entity_load(const char* filename, float x, float y, float z)
       {
         sscanf(&line[offset], " rx=%f ry=%f rz=%f", &rx, &ry, &rz);
         model_load(model_filename, position, rx, ry, rz);
+      }
+
+      char shape_name[16];
+      shape_name[15] = 0;
+      if(1 == sscanf(line, " physics shape=%15[^ ]", &shape_name))
+      {
+        physics_createBox(position);
       }
 
       line[0] = 0;
