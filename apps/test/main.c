@@ -4,8 +4,9 @@
 //gcc -o glscene.so  --shared -fpic ../../modules/glscene/glscene.c ../../modules/glscene/glmodel.c -lGL
 //gcc -o scene.so  --shared -fpic ../../modules/scene/sceneloader.c
 //gcc -o entity.so  --shared -fpic ../../modules/entity/entity.c
-//gcc -o physics.so --shared -fpic -I/usr/include ../../modules/physics-ode/physics-ode.c -lode
-//gcc -o testapp main.c ./window.so ./input.so ./render.so ./glscene.so ./scene.so ./entity.so ./physics.so
+//gcc -o time.so  --shared -fpic -I../../interfaces ../../modules/time/time.c
+//gcc -o physics.so --shared -fpic -I/usr/include -I../../interfaces ../../modules/physics-ode/physics-ode.c -lode
+//gcc -o testapp main.c ./window.so ./input.so ./render.so ./glscene.so ./scene.so ./entity.so ./physics.so ./time.so
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 

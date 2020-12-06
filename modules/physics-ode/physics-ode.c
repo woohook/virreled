@@ -2,6 +2,8 @@
 
 #include <ode/ode.h>
 
+#include "virreled/time.h"
+
 dWorldID      g_world;
 dSpaceID      g_space;
 dJointGroupID g_contact_joint_group;
@@ -52,10 +54,15 @@ void physics_processFrame()
     return;
   }
 
-  dSpaceCollide(g_space, 0, nearCallback);
-  dWorldQuickStep(g_world, g_stepsize);
+  int frameDurationMillis = time_getIntervalMilliseconds();
+  int stepDurationMillis  = g_stepsize * 1000;
+  for(int i = 0; i < frameDurationMillis; i += stepDurationMillis)
+  {
+    dSpaceCollide(g_space, 0, nearCallback);
+    dWorldQuickStep(g_world, g_stepsize);
 
-  dJointGroupEmpty(g_contact_joint_group);
+    dJointGroupEmpty(g_contact_joint_group);
+  }
 
   for(int i = 0; i < g_physics_objects_count; i++)
   {
