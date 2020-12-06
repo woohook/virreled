@@ -2,13 +2,16 @@
 
 #include <ode/ode.h>
 
-dWorldID g_world;
+dWorldID      g_world;
+dSpaceID      g_space;
+dJointGroupID g_contact_joint_group;
 dReal g_stepsize = 0.001;
 
 struct physics_object
 {
   dBodyID id;
   dMass   mass;
+  dGeomID geometry;
   float*  position;
 };
 
@@ -17,11 +20,27 @@ const int             g_physics_objects_count_max = MAX_PHYSICS_OBJECTS;
 int                   g_physics_objects_count     = 0;
 struct physics_object g_physics_objects[MAX_PHYSICS_OBJECTS];
 
+#define MAX_CONTACT_JOINTS 10
+
+void nearCallback (void *data, dGeomID o1, dGeomID o2)
+{
+  dContact contacts[MAX_CONTACT_JOINTS];
+  int contact_point_count = dCollide(o1, o2, MAX_CONTACT_JOINTS, &contacts[0].geom,sizeof(dContact));
+  for (int i = 0; i < contact_point_count; i++)
+  {
+    dJointID contactJoint = dJointCreateContact(g_world, g_contact_joint_group, &contacts[i]);
+    dJointAttach(contactJoint, dGeomGetBody(contacts[i].geom.g1), dGeomGetBody(contacts[i].geom.g2));
+  }
+}
+
 void physics_initialize()
 {
   dInitODE2(0);
 
   g_world = dWorldCreate();
+  g_space = dHashSpaceCreate(0);
+
+  g_contact_joint_group = dJointGroupCreate(0);
 
   dWorldSetGravity(g_world, 0, 0, -9.81);
 }
@@ -33,7 +52,10 @@ void physics_processFrame()
     return;
   }
 
+  dSpaceCollide(g_space, 0, nearCallback);
   dWorldQuickStep(g_world, g_stepsize);
+
+  dJointGroupEmpty(g_contact_joint_group);
 
   for(int i = 0; i < g_physics_objects_count; i++)
   {
@@ -48,24 +70,31 @@ void physics_processFrame()
 
 void physics_deinitialize()
 {
-  for(int i = 0; i < g_physics_objects_count; i++)
-  {
-    dBodyDestroy(g_physics_objects[i].id);
-  }
-
+  dJointGroupDestroy(g_contact_joint_group);
+  dSpaceDestroy(g_space);
   dWorldDestroy(g_world);
   dCloseODE();
 }
 
-struct physics_object* physics_createBox(float* position)
+struct physics_object* physics_createBox(float* position, float mass)
 {
   struct physics_object* pObject = &g_physics_objects[g_physics_objects_count];
   pObject->position = position;
 
   pObject->id = dBodyCreate (g_world);
   dBodySetPosition(pObject->id, pObject->position[0], pObject->position[2], pObject->position[1]);
-  dMassSetBox(&pObject->mass, 1, 1, 1, 1);
-  dBodySetMass(pObject->id, &pObject->mass);
+  pObject->geometry = dCreateBox(g_space, 1, 1, 1);
+  if(mass > 0)
+  {
+    dMassSetBoxTotal(&pObject->mass, mass, 1, 1, 1);
+    dBodySetMass(pObject->id, &pObject->mass);
+    dGeomSetBody(pObject->geometry, pObject->id);
+  }
+  else
+  {
+    dGeomSetPosition(pObject->geometry, pObject->position[0], pObject->position[2], pObject->position[1]);
+    dBodySetGravityMode(pObject->id, 0);
+  }
 
   ++g_physics_objects_count;
 
