@@ -67,6 +67,9 @@ void physics_processFrame()
   for(int i = 0; i < g_physics_objects_count; i++)
   {
     struct physics_object* pObject   = &g_physics_objects[i];
+
+    if(pObject->id == 0) continue;
+
     const dReal*           position  = dBodyGetPosition(pObject->id);
 
     pObject->position[0] = position[0];
@@ -87,12 +90,13 @@ struct physics_object* physics_createBox(float* position, float mass)
 {
   struct physics_object* pObject = &g_physics_objects[g_physics_objects_count];
   pObject->position = position;
+  pObject->id = 0;
 
-  pObject->id = dBodyCreate (g_world);
-  dBodySetPosition(pObject->id, pObject->position[0], pObject->position[2], pObject->position[1]);
   pObject->geometry = dCreateBox(g_space, 1, 1, 1);
   if(mass > 0)
   {
+    pObject->id = dBodyCreate (g_world);
+    dBodySetPosition(pObject->id, pObject->position[0], pObject->position[2], pObject->position[1]);
     dMassSetBoxTotal(&pObject->mass, mass, 1, 1, 1);
     dBodySetMass(pObject->id, &pObject->mass);
     dGeomSetBody(pObject->geometry, pObject->id);
@@ -100,7 +104,6 @@ struct physics_object* physics_createBox(float* position, float mass)
   else
   {
     dGeomSetPosition(pObject->geometry, pObject->position[0], pObject->position[2], pObject->position[1]);
-    dBodySetGravityMode(pObject->id, 0);
   }
 
   ++g_physics_objects_count;
