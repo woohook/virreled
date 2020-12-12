@@ -86,18 +86,18 @@ void physics_deinitialize()
   dCloseODE();
 }
 
-struct physics_object* physics_createBox(float* position, float mass)
+struct physics_object* physics_createBox(float* position, float* extents, float mass)
 {
   struct physics_object* pObject = &g_physics_objects[g_physics_objects_count];
   pObject->position = position;
   pObject->id = 0;
 
-  pObject->geometry = dCreateBox(g_space, 1, 1, 1);
+  pObject->geometry = dCreateBox(g_space, extents[0], extents[2], extents[1]);
   if(mass > 0)
   {
     pObject->id = dBodyCreate (g_world);
     dBodySetPosition(pObject->id, pObject->position[0], pObject->position[2], pObject->position[1]);
-    dMassSetBoxTotal(&pObject->mass, mass, 1, 1, 1);
+    dMassSetBoxTotal(&pObject->mass, mass, extents[0], extents[2], extents[1]);
     dBodySetMass(pObject->id, &pObject->mass);
     dGeomSetBody(pObject->geometry, pObject->id);
   }

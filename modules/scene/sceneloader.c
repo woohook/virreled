@@ -16,7 +16,7 @@ float* entity_getPosition(struct entity*);
 
 void generator_createEntity(const char* parameters);
 
-struct physics_object* physics_createBox(float* position, float mass);
+struct physics_object* physics_createBox(float* position, float* extents, float mass);
 
 void entity_load(const char* filename, float x, float y, float z)
 {
@@ -59,8 +59,23 @@ void entity_load(const char* filename, float x, float y, float z)
       if(1 == sscanf(line, " physics shape=%15[^ ]%n", &shape_name, &offset))
       {
         float mass = 0;
+        float extents[] = {1,1,1};
+
         sscanf(&line[offset], " mass=%f", &mass);  // mass is optional. No mass means also no gravity.
-        physics_createBox(position, mass);
+
+        char* paramStr = strstr(line, "extents=(");
+        if(paramStr != 0)
+        {
+          float x, y, z;
+          if(3 == sscanf(paramStr, "extents=(x=%f, y=%f, z=%f)", &x, &y, &z))
+          {
+            extents[0] = x;
+            extents[1] = y;
+            extents[2] = z;
+          }
+        }
+
+        physics_createBox(position, extents, mass);
       }
 
       line[0] = 0;
