@@ -105,15 +105,15 @@ void generator_createEntity(const char* parameters)
     model_add_material(color[0], color[1], color[2]);
     model_select_material(1);
 
-    model_add_vertex(0.5, 0.5,  -0.5);
-    model_add_vertex(0.5, 0.5,   0.5);
-    model_add_vertex(0.5, -0.5,  0.5);
-    model_add_vertex(0.5, -0.5, -0.5);
+    model_add_vertex(0.5*extents[0],  0.5*extents[1], -0.5*extents[2]);
+    model_add_vertex(0.5*extents[0],  0.5*extents[1],  0.5*extents[2]);
+    model_add_vertex(0.5*extents[0], -0.5*extents[1],  0.5*extents[2]);
+    model_add_vertex(0.5*extents[0], -0.5*extents[1], -0.5*extents[2]);
 
-    model_add_vertex(-0.5, 0.5,  -0.5);
-    model_add_vertex(-0.5, 0.5,   0.5);
-    model_add_vertex(-0.5, -0.5,  0.5);
-    model_add_vertex(-0.5, -0.5, -0.5);
+    model_add_vertex(-0.5*extents[0],  0.5*extents[1], -0.5*extents[2]);
+    model_add_vertex(-0.5*extents[0],  0.5*extents[1],  0.5*extents[2]);
+    model_add_vertex(-0.5*extents[0], -0.5*extents[1],  0.5*extents[2]);
+    model_add_vertex(-0.5*extents[0], -0.5*extents[1], -0.5*extents[2]);
 
     model_add_face(1, 2, 3);
     model_add_face(3, 4, 1);
