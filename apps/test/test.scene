@@ -1,5 +1,5 @@
 entity axes.ntt x=0 y=0 z=0
 entity arrow.ntt x=1 y=0 z=1
-entity cube.ntt x=0 y=2 z=0
-entity ground.ntt x=0 y=-0.6 z=-0.7
+entity generate shape=box position=(x=0, y=2, z=0) mass=1 color=(red=1, green=0, blue=0)
+entity generate shape=box position=(x=0, y=-0.6, z=-0.7) color=(red=0.3, green=0.3, blue=0.3)
 camera x=0.125 y=0.125 z=0 rx=0 ry=0 rz=0
