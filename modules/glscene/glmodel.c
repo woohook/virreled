@@ -28,7 +28,6 @@ struct model
 
   struct material materials[100];
   int             material_count;
-  int             current_material;
 
   struct face faces[100];
   int         face_count;
@@ -40,13 +39,74 @@ struct model
 #define      MODEL_COUNT_MAX 10
 const int    g_model_count_max = MODEL_COUNT_MAX;
 struct model g_models[MODEL_COUNT_MAX];
-int          g_model_count;
+int          g_model_count = 0;
 
 float* g_rx = &g_models[1].rx;
 float* g_ry = &g_models[1].ry;
 float* g_rz = &g_models[1].rz;
 
-void materials_load(struct model* pModel, const char* filename)
+int    g_current_material = 0;
+
+void model_set_rotation(float rx, float ry, float rz)
+{
+  struct model* pModel = &g_models[g_model_count - 1];
+  pModel->rx = rx;
+  pModel->ry = ry;
+  pModel->rz = rz;
+}
+
+void model_create(float* position)
+{
+  struct model* pModel = &g_models[g_model_count];
+  pModel->vertex_count = 0;
+  pModel->face_count = 0;
+  pModel->position = position;
+  pModel->rx = 0;
+  pModel->ry = 0;
+  pModel->rz = 0;
+
+  pModel->materials[0].red   = 1;
+  pModel->materials[0].green = 0;
+  pModel->materials[0].blue  = 1;
+  pModel->material_count = 1;
+
+  ++g_model_count;
+
+  g_current_material = 0;
+}
+
+void model_add_vertex(float x, float y, float z)
+{
+  struct model* pModel = &g_models[g_model_count - 1];
+  struct vertex* v = &pModel->vertices[pModel->vertex_count];
+  v->x = x;
+  v->y = y;
+  v->z = z;
+  ++pModel->vertex_count;
+}
+
+void model_add_face(int v1, int v2, int v3)
+{
+  struct model* pModel = &g_models[g_model_count - 1];
+  struct face* f = &pModel->faces[pModel->face_count];
+  f->v1 = v1;
+  f->v2 = v2;
+  f->v3 = v3;
+  f->material = g_current_material;
+  ++pModel->face_count;
+}
+
+void model_add_material(float red, float green, float blue)
+{
+  struct model* pModel = &g_models[g_model_count - 1];
+  struct material* m = &pModel->materials[pModel->material_count];
+  m->red = red;
+  m->green = green;
+  m->blue = blue;
+  ++pModel->material_count;
+}
+
+void materials_load(const char* filename)
 {
   FILE* materialsfile  = fopen(filename, "r");
   int   matchcount     = 0;
@@ -65,9 +125,10 @@ void materials_load(struct model* pModel, const char* filename)
     fscanf(materialsfile, "\n");
     if (matchcount == 1)
     {
-      struct material* m = &pModel->materials[pModel->material_count + material_count];
-      if(3 == sscanf(line, "Kd %f %f %f", &m->red, &m->green, &m->blue))
+      float red, green, blue;
+      if(3 == sscanf(line, "Kd %f %f %f", &red, &green, &blue))
       {
+        model_add_material(red, green, blue);
         ++material_count;
       }
 
@@ -79,8 +140,6 @@ void materials_load(struct model* pModel, const char* filename)
     }
   }
 
-  pModel->material_count = pModel->material_count + material_count;
-
   if(material_count == 0)
   {
     printf("ERROR: No materials were loaded from %s\n", filename);
@@ -91,22 +150,10 @@ void materials_load(struct model* pModel, const char* filename)
 
 void model_load(const char* filename, float* position, float rx, float ry, float rz)
 {
-  struct model* pModel = &g_models[g_model_count];
-  pModel->vertex_count = 0;
-  pModel->face_count = 0;
-  pModel->position = position;
-  pModel->rx = rx;
-  pModel->ry = ry;
-  pModel->rz = rz;
-
-  pModel->materials[0].red   = 1;
-  pModel->materials[0].green = 0;
-  pModel->materials[0].blue  = 1;
-  pModel->material_count = 1;
-  pModel->current_material = 0;
-
   FILE* modelfile = fopen(filename, "r");
   int   matchcount = 0;
+  int   vertexcount = 0;
+  int   facecount = 0;
 
   if(modelfile == 0)
   {
@@ -114,7 +161,10 @@ void model_load(const char* filename, float* position, float rx, float ry, float
     return;
   }
 
-  while(pModel->vertex_count < 100)
+  model_create(position);
+  model_set_rotation(rx, ry, rz);
+
+  while(vertexcount < 100)
   {
     char line[1024];
     line[1023] = 0;
@@ -125,30 +175,31 @@ void model_load(const char* filename, float* position, float rx, float ry, float
     fscanf(modelfile, "\n");
     if (matchcount == 1)
     {
-      struct vertex* v = &pModel->vertices[pModel->vertex_count];
-      if(3 == sscanf(line, "v %f %f %f", &v->x, &v->y, &v->z))
+      float v[3];
+      if(3 == sscanf(line, "v %f %f %f", &v[0], &v[1], &v[2]))
       {
-        ++pModel->vertex_count;
+        model_add_vertex(v[0], v[1], v[2]);
+        ++vertexcount;
       }
 
-      struct face* f = &pModel->faces[pModel->face_count];
-      if(3 == sscanf(line, "f %d %d %d", &f->v1, &f->v2, &f->v3))
+      int v1, v2, v3;
+      if(3 == sscanf(line, "f %d %d %d", &v1, &v2, &v3))
       {
-        f->material = pModel->current_material;
-        ++pModel->face_count;
+        model_add_face(v1, v2, v3);
+        ++facecount;
       }
 
       if(1 == sscanf(line, "mtllib %1023[^\n]*", &filename))
       {
-        materials_load(pModel, filename);
+        materials_load(filename);
 
         filename[0] = 0;
       }
 
       int current_material = 0;
-      if(1 == sscanf(line, "usemtl %d", &current_material))
+      if( 1 == sscanf(line, "usemtl %d", &current_material))
       {
-        pModel->current_material = current_material;
+        g_current_material = current_material;
       }
 
       line[0] = 0;
@@ -159,19 +210,17 @@ void model_load(const char* filename, float* position, float rx, float ry, float
     }
   }
 
-  if(pModel->vertex_count == 0)
+  if(vertexcount == 0)
   {
     printf("ERROR: No model vertices were loaded\n");
   }
 
-  if(pModel->face_count == 0)
+  if(facecount == 0)
   {
     printf("ERROR: No model faces were loaded\n");
   }
 
   fclose(modelfile);
-
-  ++g_model_count;
 }
 
 void model_render(float cam_x, float cam_y, float cam_z, float rotX, float rotY, float rotZ)
