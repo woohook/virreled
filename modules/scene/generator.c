@@ -13,6 +13,8 @@ float* entity_getPosition(struct entity*);
 void model_create(float* position);
 void model_add_vertex(float x, float y, float z);
 void model_add_face(int v1, int v2, int v3);
+void model_add_material(float red, float green, float blue);
+void model_select_material(int materialIndex);
 
 struct physics_object* physics_createBox(float* position, float mass);
 
@@ -27,6 +29,7 @@ void generator_createEntity(const char* parameters)
   extents[0] = 1;
   extents[2] = 1;
   extents[3] = 1;
+  float color[] = {1,0,1};
 
   float mass = 0;
   int shape = GENERATOR_SHAPE_UNDEFINED;
@@ -49,6 +52,18 @@ void generator_createEntity(const char* parameters)
       position[0] = x;
       position[1] = y;
       position[2] = z;
+    }
+  }
+
+  paramStr = strstr(parameters, "color=(");
+  if(paramStr != 0)
+  {
+    float red, green, blue;
+    if(3 == sscanf(paramStr, "color=(red=%f, green=%f, blue=%f)", &red, &green, &blue))
+    {
+      color[0] = red;
+      color[1] = green;
+      color[2] = blue;
     }
   }
 
@@ -77,6 +92,9 @@ void generator_createEntity(const char* parameters)
   if(shape != GENERATOR_SHAPE_UNDEFINED)
   {
     model_create(position);
+
+    model_add_material(color[0], color[1], color[2]);
+    model_select_material(1);
 
     model_add_vertex(0.5, 0.5,  -0.5);
     model_add_vertex(0.5, 0.5,   0.5);

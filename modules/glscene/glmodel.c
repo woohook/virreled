@@ -106,6 +106,11 @@ void model_add_material(float red, float green, float blue)
   ++pModel->material_count;
 }
 
+void model_select_material(int materialIndex)
+{
+  g_current_material = materialIndex;
+}
+
 void materials_load(const char* filename)
 {
   FILE* materialsfile  = fopen(filename, "r");
@@ -199,7 +204,7 @@ void model_load(const char* filename, float* position, float rx, float ry, float
       int current_material = 0;
       if( 1 == sscanf(line, "usemtl %d", &current_material))
       {
-        g_current_material = current_material;
+        model_select_material(current_material);
       }
 
       line[0] = 0;
