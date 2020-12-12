@@ -1,4 +1,7 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include <stdlib.h>
+#include <string.h>
 #include <stdio.h>
 
 extern const int g_entities_count_max;
@@ -10,6 +13,8 @@ void model_load(const char* filename, float* position, float rx, float ry, float
 
 struct entity* entity_create();
 float* entity_getPosition(struct entity*);
+
+void generator_createEntity(const char* parameters);
 
 struct physics_object* physics_createBox(float* position, float mass);
 
@@ -95,6 +100,12 @@ void scene_load(const char* filename)
       char model_filename[1024];
       char entity_filename[1024];
       int offset = 0;
+
+      if(0 == strncmp(line, "entity generate", 15))
+      {
+        generator_createEntity(line);
+        ++entities_count;
+      }
 
       if(4 == sscanf(line, " entity %1023[^ ] x=%f y=%f z=%f%n", &entity_filename, &x, &y, &z, &offset))
       {

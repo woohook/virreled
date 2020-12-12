@@ -2,7 +2,7 @@
 //gcc -o input.so  --shared -fpic ../../modules/x11input/x11input.c -lX11
 //gcc -o render.so --shared -fpic ../../modules/glxrender/glxrender.c -lGL
 //gcc -o glscene.so  --shared -fpic ../../modules/glscene/glscene.c ../../modules/glscene/glmodel.c -lGL
-//gcc -o scene.so  --shared -fpic ../../modules/scene/sceneloader.c
+//gcc -o scene.so  --shared -fpic ../../modules/scene/sceneloader.c ../../modules/scene/generator.c
 //gcc -o entity.so  --shared -fpic ../../modules/entity/entity.c
 //gcc -o time.so  --shared -fpic -I../../interfaces ../../modules/time/time.c
 //gcc -o physics.so --shared -fpic -I/usr/include -I../../interfaces ../../modules/physics-ode/physics-ode.c -lode
