@@ -32,7 +32,7 @@ struct model
   struct face faces[100];
   int         face_count;
 
-  float* position;
+  float* transform;
   float rx, ry, rz;
 };
 
@@ -55,12 +55,12 @@ void model_set_rotation(float rx, float ry, float rz)
   pModel->rz = rz;
 }
 
-void model_create(float* position)
+void model_create(float* transform)
 {
   struct model* pModel = &g_models[g_model_count];
   pModel->vertex_count = 0;
   pModel->face_count = 0;
-  pModel->position = position;
+  pModel->transform = transform;
   pModel->rx = 0;
   pModel->ry = 0;
   pModel->rz = 0;
@@ -153,7 +153,7 @@ void materials_load(const char* filename)
   fclose(materialsfile);
 }
 
-void model_load(const char* filename, float* position, float rx, float ry, float rz)
+void model_load(const char* filename, float* transform, float rx, float ry, float rz)
 {
   FILE* modelfile = fopen(filename, "r");
   int   matchcount = 0;
@@ -166,7 +166,7 @@ void model_load(const char* filename, float* position, float rx, float ry, float
     return;
   }
 
-  model_create(position);
+  model_create(transform);
   model_set_rotation(rx, ry, rz);
 
   while(vertexcount < 100)
@@ -252,15 +252,15 @@ void model_render(float cam_x, float cam_y, float cam_z, float rotX, float rotY,
     glRotatef (180 - g_models[1].ry, 0,1,0);
 
     // move world to view coordinates
-    glTranslatef(-g_models[1].position[0], -g_models[1].position[1], -g_models[1].position[2]);
+    glTranslatef(-g_models[1].transform[12], -g_models[1].transform[13], -g_models[1].transform[14]);
 
-    // move model to world coordinates
-    glTranslatef(pModel->position[0], pModel->position[1], pModel->position[2]);
-
-    // rotate the model
-    glRotatef (pModel->ry, 0,1,0);
-    glRotatef (pModel->rx, 1,0,0);
-    glRotatef (pModel->rz, 0,0,1);
+    // apply the model transformation matrix
+    GLfloat transform[16];
+    for(int j=0;j<16;++j)
+    {
+      transform[j] = pModel->transform[j];
+    }
+    glMultMatrixf(transform);
 
     glBegin (GL_TRIANGLES);
 

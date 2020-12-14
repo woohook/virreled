@@ -9,22 +9,22 @@ extern int       g_entities_count;
 extern float     g_cam_x, g_cam_y, g_cam_z;
 extern float     g_cam_rx, g_cam_ry, g_cam_rz;
 
-void model_load(const char* filename, float* position, float rx, float ry, float rz);
+void model_load(const char* filename, float* transform, float rx, float ry, float rz);
 
 struct entity* entity_create();
-float* entity_getPosition(struct entity*);
+float* entity_getTransform(struct entity*);
 
 void generator_createEntity(const char* parameters);
 
-struct physics_object* physics_createBox(float* position, float* extents, float mass);
+struct physics_object* physics_createBox(float* transform, float* extents, float mass);
 
 void entity_load(const char* filename, float x, float y, float z)
 {
   struct entity* pEntity = entity_create();
-  float* position = entity_getPosition(pEntity);
-  position[0] = x;
-  position[1] = y;
-  position[2] = z;
+  float* transform = entity_getTransform(pEntity);
+  transform[12] = x;
+  transform[13] = y;
+  transform[14] = z;
 
   FILE* file        = fopen(filename, "r");
   int   matchcount  = 0;
@@ -51,7 +51,7 @@ void entity_load(const char* filename, float x, float y, float z)
       if(4 == sscanf(line, " model %1023[^ ] x=%f y=%f z=%f%n", &model_filename, &model_x, &model_y, &model_z, &offset))
       {
         sscanf(&line[offset], " rx=%f ry=%f rz=%f", &rx, &ry, &rz);
-        model_load(model_filename, position, rx, ry, rz);
+        model_load(model_filename, transform, rx, ry, rz);
       }
 
       char shape_name[16];
@@ -75,7 +75,7 @@ void entity_load(const char* filename, float x, float y, float z)
           }
         }
 
-        physics_createBox(position, extents, mass);
+        physics_createBox(transform, extents, mass);
       }
 
       line[0] = 0;

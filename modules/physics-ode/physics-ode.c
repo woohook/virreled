@@ -14,7 +14,7 @@ struct physics_object
   dBodyID id;
   dMass   mass;
   dGeomID geometry;
-  float*  position;
+  float*  transform;
 };
 
 #define MAX_PHYSICS_OBJECTS 10
@@ -70,11 +70,23 @@ void physics_processFrame()
 
     if(pObject->id == 0) continue;
 
-    const dReal*           position  = dBodyGetPosition(pObject->id);
+    const dReal* position  = dBodyGetPosition(pObject->id);
 
-    pObject->position[0] = position[0];
-    pObject->position[1] = position[2];
-    pObject->position[2] = position[1];
+    pObject->transform[12] = position[0];
+    pObject->transform[13] = position[2];
+    pObject->transform[14] = position[1];
+
+    const dReal* rotation  = dBodyGetRotation(pObject->id);
+
+    pObject->transform[0]  = rotation[0];
+    pObject->transform[1]  = rotation[4];
+    pObject->transform[2]  = rotation[8];
+    pObject->transform[4]  = rotation[1];
+    pObject->transform[5]  = rotation[5];
+    pObject->transform[6]  = rotation[9];
+    pObject->transform[8]  = rotation[2];
+    pObject->transform[9]  = rotation[6];
+    pObject->transform[10] = -rotation[10];
   }
 }
 
@@ -86,24 +98,24 @@ void physics_deinitialize()
   dCloseODE();
 }
 
-struct physics_object* physics_createBox(float* position, float* extents, float mass)
+struct physics_object* physics_createBox(float* transform, float* extents, float mass)
 {
   struct physics_object* pObject = &g_physics_objects[g_physics_objects_count];
-  pObject->position = position;
+  pObject->transform = transform;
   pObject->id = 0;
 
   pObject->geometry = dCreateBox(g_space, extents[0], extents[2], extents[1]);
   if(mass > 0)
   {
     pObject->id = dBodyCreate (g_world);
-    dBodySetPosition(pObject->id, pObject->position[0], pObject->position[2], pObject->position[1]);
+    dBodySetPosition(pObject->id, pObject->transform[12], pObject->transform[14], pObject->transform[13]);
     dMassSetBoxTotal(&pObject->mass, mass, extents[0], extents[2], extents[1]);
     dBodySetMass(pObject->id, &pObject->mass);
     dGeomSetBody(pObject->geometry, pObject->id);
   }
   else
   {
-    dGeomSetPosition(pObject->geometry, pObject->position[0], pObject->position[2], pObject->position[1]);
+    dGeomSetPosition(pObject->geometry, pObject->transform[12], pObject->transform[14], pObject->transform[13]);
   }
 
   ++g_physics_objects_count;
