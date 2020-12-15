@@ -253,7 +253,30 @@ void model_render(float cam_x, float cam_y, float cam_z, float rotX, float rotY,
 
     // move world to view coordinates
     glTranslatef(-g_models[1].transform[12], -g_models[1].transform[13], -g_models[1].transform[14]);
+/*
+    GLfloat x[16];
+    x[0] = g_models[4].transform[0];
+    x[1] = g_models[4].transform[4];
+    x[2] = g_models[4].transform[8];
+    x[3] = 0;
 
+    x[4] = g_models[4].transform[1];
+    x[5] = g_models[4].transform[5];
+    x[6] = g_models[4].transform[9];
+    x[7] = 0;
+
+    x[8] = g_models[4].transform[2];
+    x[9] = -g_models[4].transform[6];
+    x[10] = g_models[4].transform[10];
+    x[11] = 0;
+
+    x[12] = -g_models[4].transform[12];
+    x[13] = -g_models[4].transform[13];
+    x[14] = -g_models[4].transform[14];
+    x[15] = 1;
+
+    glMultMatrixf(x);
+*/
     // apply the model transformation matrix
     GLfloat transform[16];
     for(int j=0;j<16;++j)
