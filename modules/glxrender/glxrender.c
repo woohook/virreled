@@ -15,6 +15,7 @@ extern XSetWindowAttributes g_windowAttributes;
 
 XVisualInfo* g_visualinfo    = 0;
 GLXContext   g_rendercontext = 0;
+int          g_glInitialized = 0;
 
 void render_initialize()
 {
@@ -41,8 +42,8 @@ void render_processFrame()
     g_rendercontext = glXCreateContext(g_display, g_visualinfo, 0, GL_TRUE);
     glXMakeCurrent(g_display, g_window, g_rendercontext);
     glViewport(0, 0, g_width, g_height);
+    g_glInitialized = 1;
   }
-
 }
 
 void render_postProcessFrame()

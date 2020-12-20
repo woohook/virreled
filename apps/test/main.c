@@ -10,7 +10,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+extern int g_glInitialized;
+
 int g_keepRunning = 1;
+int g_scene_loaded = 0;
 
 void window_initialize();
 void window_processFrame();
@@ -43,9 +46,16 @@ int main(int argc, char** argv)
   physics_initialize();
   scene_initialize();
 
-  scene_load("test.scene");
-
   while (g_keepRunning) {
+    if(g_scene_loaded == 0)
+    {
+      if(g_glInitialized == 1)
+      {
+        scene_load("test.scene");
+        g_scene_loaded = 1;
+      }
+    }
+
     window_processFrame();
     input_processFrame();
     render_processFrame();

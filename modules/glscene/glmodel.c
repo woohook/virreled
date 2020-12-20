@@ -47,6 +47,28 @@ float* g_rz = &g_models[1].rz;
 
 int    g_current_material = 0;
 
+#define textureWidth 2
+#define textureHeight 2
+static GLubyte textureData[] = {0,255,255,255, 255,0,255,255, 255,255,0,255, 0,0,255,255};
+static GLuint textureName;
+int texture_initialized = 0;
+
+void texture_initialize()
+{
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+  glGenTextures(1, &textureName);
+  glBindTexture(GL_TEXTURE_2D, textureName);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
+
+  texture_initialized = 1;
+}
+
 void model_set_rotation(float rx, float ry, float rz)
 {
   struct model* pModel = &g_models[g_model_count - 1];
@@ -57,6 +79,11 @@ void model_set_rotation(float rx, float ry, float rz)
 
 void model_create(float* transform)
 {
+  if(texture_initialized == 0)
+  {
+    texture_initialize();
+  }
+
   struct model* pModel = &g_models[g_model_count];
   pModel->vertex_count = 0;
   pModel->face_count = 0;
@@ -285,6 +312,13 @@ void model_render(float cam_x, float cam_y, float cam_z, float rotX, float rotY,
     }
     glMultMatrixf(transform);
 
+    if(modelId == 4)
+    {
+      glEnable(GL_TEXTURE_2D);
+      glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+      glBindTexture(GL_TEXTURE_2D, textureName);
+    }
+
     glBegin (GL_TRIANGLES);
 
     for(int i = 0; i < pModel->face_count; ++i)
@@ -295,11 +329,19 @@ void model_render(float cam_x, float cam_y, float cam_z, float rotX, float rotY,
       struct vertex* v2  = &pModel->vertices[f->v2 - 1];
       struct vertex* v3  = &pModel->vertices[f->v3 - 1];
       glColor3f(m->red, m->green, m->blue);
+      glTexCoord2f(0.0, 0.0);
       glVertex3f(v1->x, v1->y, v1->z);
+      glTexCoord2f(0.0, 1.0);
       glVertex3f(v2->x, v2->y, v2->z);
+      glTexCoord2f(1.0, 1.0);
       glVertex3f(v3->x, v3->y, v3->z);
     }
 
     glEnd();
+
+    if(modelId == 4)
+    {
+      glDisable(GL_TEXTURE_2D);
+    }
   }
 }
