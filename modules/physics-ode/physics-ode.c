@@ -40,7 +40,7 @@ void physics_initialize()
   dInitODE2(0);
 
   g_world = dWorldCreate();
-  g_space = dHashSpaceCreate(0);
+  g_space = dSweepAndPruneSpaceCreate(0, dSAP_AXES_XYZ);
 
   g_contact_joint_group = dJointGroupCreate(0);
 
