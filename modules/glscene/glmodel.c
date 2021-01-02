@@ -11,14 +11,24 @@ struct vertex
   float x, y, z;
 };
 
+struct texcoord
+{
+  float u, v;
+};
+
 struct material
 {
   float red, green, blue;
+  GLuint texture_id;
+  GLubyte texture[10240];
+  int texture_width;
+  int texture_height;
 };
 
 struct face
 {
   int v1, v2, v3, material;
+  int vt[3];
 };
 
 struct model
@@ -28,6 +38,9 @@ struct model
 
   struct material materials[100];
   int             material_count;
+
+  struct texcoord texcoords[128];
+  int             texcoord_count;
 
   struct face faces[100];
   int         face_count;
@@ -47,26 +60,22 @@ float* g_rz = &g_models[1].rz;
 
 int    g_current_material = 0;
 
-#define textureWidth 2
-#define textureHeight 2
-static GLubyte textureData[] = {0,255,255,255, 255,0,255,255, 255,255,0,255, 0,0,255,255};
-static GLuint textureName;
-int texture_initialized = 0;
+#define g_textureWidth 2
+#define g_textureHeight 2
+static GLubyte g_textureData[] = {0,255,255,255, 255,0,255,255, 255,255,0,255, 0,0,255,255};
 
-void texture_initialize()
+void texture_initialize(GLuint* textureId, int width, int height, GLubyte* data)
 {
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-  glGenTextures(1, &textureName);
-  glBindTexture(GL_TEXTURE_2D, textureName);
+  glGenTextures(1, textureId);
+  glBindTexture(GL_TEXTURE_2D, *textureId);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
-
-  texture_initialized = 1;
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 }
 
 void model_set_rotation(float rx, float ry, float rz)
@@ -79,11 +88,6 @@ void model_set_rotation(float rx, float ry, float rz)
 
 void model_create(float* transform)
 {
-  if(texture_initialized == 0)
-  {
-    texture_initialize();
-  }
-
   struct model* pModel = &g_models[g_model_count];
   pModel->vertex_count = 0;
   pModel->face_count = 0;
@@ -95,7 +99,12 @@ void model_create(float* transform)
   pModel->materials[0].red   = 1;
   pModel->materials[0].green = 0;
   pModel->materials[0].blue  = 1;
+  pModel->materials[0].texture_id     = 0;
+  pModel->materials[0].texture_width  = 0;
+  pModel->materials[0].texture_height = 0;
   pModel->material_count = 1;
+
+  pModel->texcoord_count = 0;
 
   ++g_model_count;
 
@@ -112,6 +121,15 @@ void model_add_vertex(float x, float y, float z)
   ++pModel->vertex_count;
 }
 
+void model_add_texcoord(float u, float v)
+{
+  struct model* pModel = &g_models[g_model_count - 1];
+  struct texcoord* uv = &pModel->texcoords[pModel->texcoord_count];
+  uv->u = u;
+  uv->v = v;
+  ++pModel->texcoord_count;
+}
+
 void model_add_face(int v1, int v2, int v3)
 {
   struct model* pModel = &g_models[g_model_count - 1];
@@ -119,6 +137,9 @@ void model_add_face(int v1, int v2, int v3)
   f->v1 = v1;
   f->v2 = v2;
   f->v3 = v3;
+  f->vt[0] = -1;
+  f->vt[1] = -1;
+  f->vt[2] = -1;
   f->material = g_current_material;
   ++pModel->face_count;
 }
@@ -130,6 +151,9 @@ void model_add_material(float red, float green, float blue)
   m->red = red;
   m->green = green;
   m->blue = blue;
+  m->texture_id = 0;
+  m->texture_width = 0;
+  m->texture_height = 0;
   ++pModel->material_count;
 }
 
@@ -214,6 +238,12 @@ void model_load(const char* filename, float* transform, float rx, float ry, floa
         ++vertexcount;
       }
 
+      float uv[2];
+      if(2 == sscanf(line, "vt %f %f", &uv[0], &uv[1]))
+      {
+        model_add_texcoord(uv[0], uv[1]);
+      }
+
       int v1, v2, v3;
       if(3 == sscanf(line, "f %d %d %d", &v1, &v2, &v3))
       {
@@ -240,6 +270,18 @@ void model_load(const char* filename, float* transform, float rx, float ry, floa
     {
       break;
     }
+  }
+
+  if(g_model_count == 6)
+  {
+    struct model* pModel = &g_models[g_model_count - 1];
+    pModel->materials[0].texture_width = g_textureWidth;
+    pModel->materials[0].texture_height = g_textureHeight;
+    for(int i=0; i < g_textureWidth * g_textureHeight * 4; ++i)
+    {
+      pModel->materials[0].texture[i] = g_textureData[i];
+    }
+    texture_initialize(&pModel->materials[0].texture_id, pModel->materials[0].texture_width, pModel->materials[0].texture_height, pModel->materials[0].texture);
   }
 
   if(vertexcount == 0)
@@ -312,11 +354,12 @@ void model_render(float cam_x, float cam_y, float cam_z, float rotX, float rotY,
     }
     glMultMatrixf(transform);
 
-    if(modelId == 4)
+    struct material* modelMaterial = &pModel->materials[0];
+    if(modelMaterial->texture_width > 0)
     {
       glEnable(GL_TEXTURE_2D);
       glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-      glBindTexture(GL_TEXTURE_2D, textureName);
+      glBindTexture(GL_TEXTURE_2D, modelMaterial->texture_id);
     }
 
     glBegin (GL_TRIANGLES);
@@ -339,7 +382,7 @@ void model_render(float cam_x, float cam_y, float cam_z, float rotX, float rotY,
 
     glEnd();
 
-    if(modelId == 4)
+    if(modelMaterial->texture_width > 0)
     {
       glDisable(GL_TEXTURE_2D);
     }
