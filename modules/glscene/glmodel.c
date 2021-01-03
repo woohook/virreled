@@ -60,10 +60,6 @@ float* g_rz = &g_models[1].rz;
 
 int    g_current_material = 0;
 
-#define g_textureWidth 2
-#define g_textureHeight 2
-static GLubyte g_textureData[] = {0,255,255,255, 255,0,255,255, 255,255,0,255, 0,0,255,255};
-
 void texture_initialize(GLuint* textureId, int width, int height, GLubyte* data)
 {
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -130,18 +126,23 @@ void model_add_texcoord(float u, float v)
   ++pModel->texcoord_count;
 }
 
-void model_add_face(int v1, int v2, int v3)
+void model_add_face_with_texcoords(int v1, int v2, int v3, int vt1, int vt2, int vt3)
 {
   struct model* pModel = &g_models[g_model_count - 1];
   struct face* f = &pModel->faces[pModel->face_count];
   f->v1 = v1;
   f->v2 = v2;
   f->v3 = v3;
-  f->vt[0] = -1;
-  f->vt[1] = -1;
-  f->vt[2] = -1;
+  f->vt[0] = vt1;
+  f->vt[1] = vt2;
+  f->vt[2] = vt3;
   f->material = g_current_material;
   ++pModel->face_count;
+}
+
+void model_add_face(int v1, int v2, int v3)
+{
+  model_add_face_with_texcoords(v1, v2, v3, -1, -1, -1);
 }
 
 void model_add_material(float red, float green, float blue)
@@ -160,6 +161,50 @@ void model_add_material(float red, float green, float blue)
 void model_select_material(int materialIndex)
 {
   g_current_material = materialIndex;
+}
+
+void p3ppm_load(const char* filename)
+{
+  FILE* texturefile  = fopen(filename, "r");
+  int   matchcount     = 0;
+  int   texture_width  = 0;
+  int   texture_height = 0;
+  int   max_value      = 0;
+  const int alpha      = 255;
+
+  if(texturefile == 0)
+  {
+    printf("ERROR: %s could not be opened\n", filename);
+    return;
+  }
+
+  matchcount = fscanf(texturefile, "P3 %d %d %d\n", &texture_width, &texture_height, &max_value);
+  if(matchcount != 3)
+  {
+    printf("ERROR: File format not recognized\n");
+  }
+
+  struct model* pModel = &g_models[g_model_count - 1];
+  struct material* m = &pModel->materials[pModel->material_count - 1];
+
+  m->texture_width  = texture_width;
+  m->texture_height = texture_height;
+
+  for(int i=0; i < (texture_width * texture_height); ++i)
+  {
+    int red, green, blue;
+    if(3 == fscanf(texturefile, " %d %d %d", &red, &green, &blue))
+    {
+      m->texture[i*4+0] = red;
+      m->texture[i*4+1] = green;
+      m->texture[i*4+2] = blue;
+      m->texture[i*4+3] = alpha;
+    }
+  }
+
+  fclose(texturefile);
+
+  texture_initialize(&m->texture_id, m->texture_width, m->texture_height, m->texture);
 }
 
 void materials_load(const char* filename)
@@ -186,6 +231,11 @@ void materials_load(const char* filename)
       {
         model_add_material(red, green, blue);
         ++material_count;
+      }
+      char textureFilename[1024];
+      if(1 == sscanf(line, "map_Kd %s", &textureFilename))
+      {
+        p3ppm_load(textureFilename);
       }
 
       line[0] = 0;
@@ -251,6 +301,13 @@ void model_load(const char* filename, float* transform, float rx, float ry, floa
         ++facecount;
       }
 
+      int vt1, vt2, vt3;
+      if(6 == sscanf(line, "f %d/%d %d/%d %d/%d", &v1, &vt1, &v2, &vt2, &v3, &vt3))
+      {
+        model_add_face_with_texcoords(v1, v2, v3, vt1, vt2, vt3);
+        ++facecount;
+      }
+
       if(1 == sscanf(line, "mtllib %1023[^\n]*", &filename))
       {
         materials_load(filename);
@@ -270,18 +327,6 @@ void model_load(const char* filename, float* transform, float rx, float ry, floa
     {
       break;
     }
-  }
-
-  if(g_model_count == 6)
-  {
-    struct model* pModel = &g_models[g_model_count - 1];
-    pModel->materials[0].texture_width = g_textureWidth;
-    pModel->materials[0].texture_height = g_textureHeight;
-    for(int i=0; i < g_textureWidth * g_textureHeight * 4; ++i)
-    {
-      pModel->materials[0].texture[i] = g_textureData[i];
-    }
-    texture_initialize(&pModel->materials[0].texture_id, pModel->materials[0].texture_width, pModel->materials[0].texture_height, pModel->materials[0].texture);
   }
 
   if(vertexcount == 0)
@@ -354,7 +399,7 @@ void model_render(float cam_x, float cam_y, float cam_z, float rotX, float rotY,
     }
     glMultMatrixf(transform);
 
-    struct material* modelMaterial = &pModel->materials[0];
+    struct material* modelMaterial = &pModel->materials[pModel->faces[0].material];
     if(modelMaterial->texture_width > 0)
     {
       glEnable(GL_TEXTURE_2D);
@@ -371,12 +416,24 @@ void model_render(float cam_x, float cam_y, float cam_z, float rotX, float rotY,
       struct vertex* v1  = &pModel->vertices[f->v1 - 1];
       struct vertex* v2  = &pModel->vertices[f->v2 - 1];
       struct vertex* v3  = &pModel->vertices[f->v3 - 1];
+      struct texcoord* vt1  = &pModel->texcoords[f->vt[0] - 1];
+      struct texcoord* vt2  = &pModel->texcoords[f->vt[1] - 1];
+      struct texcoord* vt3  = &pModel->texcoords[f->vt[2] - 1];
       glColor3f(m->red, m->green, m->blue);
-      glTexCoord2f(0.0, 0.0);
+      if(modelMaterial->texture_width > 0)
+      {
+        glTexCoord2f(vt1->u, vt1->v);
+      }
       glVertex3f(v1->x, v1->y, v1->z);
-      glTexCoord2f(0.0, 1.0);
+      if(modelMaterial->texture_width > 0)
+      {
+        glTexCoord2f(vt2->u, vt2->v);
+      }
       glVertex3f(v2->x, v2->y, v2->z);
-      glTexCoord2f(1.0, 1.0);
+      if(modelMaterial->texture_width > 0)
+      {
+        glTexCoord2f(vt3->u, vt3->v);
+      }
       glVertex3f(v3->x, v3->y, v3->z);
     }
 
