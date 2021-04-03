@@ -1,0 +1,2 @@
+gcc demo.c src/demogfx/*.o -o demo `sdl-config --cflags --libs` -lm -ldl -O3 -march=pentium2 -fomit-frame-pointer -ffast-math -funroll-loops -funsafe-math-optimizations -fopenmp -Wall -W
+gcc triaxial.c src/demogfx/*.o -o triaxial `sdl-config --cflags --libs` -lm -ldl -O3 -march=pentium2 -fomit-frame-pointer -ffast-math -funroll-loops -funsafe-math-optimizations -fopenmp -Wall -W

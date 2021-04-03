@@ -1,0 +1,17 @@
+camera 0.67 0.0 -0.05
+objtypes 3
+newdata/fmc.geo newdata/fmc.col data/nocl.cld
+data/wheel.geo data/wheel.col data/wheel.cld
+data/wheel3.geo data/wheel.col data/wheel.cld
+objects 5
+1 1  -0.7 0 14  0.2 29.84 1000 0.7
+3 3  -0.7 -0.8 12.6  0.4 0.1865 1000 1.4
+3 3  -0.7 0.8 12.6  0.4 0.1865 1000 1.4
+2 4  -0.7 -0.75 15.0  0.4 0.1865 1000 1.4
+2 4  -0.7 0.75 15.0  0.4 0.1865 1000 1.4
+accel 1.6
+brake 0.8
+spring 200
+damper 7
+drag 0.001
+downforce 0.00

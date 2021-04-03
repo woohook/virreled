@@ -1,0 +1,13 @@
+ambient 0.5
+headlight 0.2
+directional 0.6
+lightdir -1.0 1.0 1.0
+background 190 200 225
+clfactors 1.0 1.0 1.0
+objtypes 4
+data/steer.geo data/steer.col data/noref.ref data/nocl.cld
+data/speed.geo data/speed.col data/noref.ref data/nocl.cld
+data/dmod.geo data/dmod.col data/noref.ref data/nocl.cld
+newdata/petrinjamt.geo newdata/petrinjamt.col newdata/petrinjamt.ref data/nocl.cld
+objects 1
+4  -207.4 585.6565 -130.2570  0.0 0.0 0.0 2 0

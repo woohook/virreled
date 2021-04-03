@@ -1,0 +1,2 @@
+gcc src/simcar2.c -o simcar2 `sdl2-config --cflags --libs` -lm -ldl -O3 -march=pentium2 -fomit-frame-pointer -ffast-math -funroll-loops -funsafe-math-optimizations -Wall -W
+gcc src/replay2.c -o replay2 `sdl2-config --cflags --libs` -lm -ldl -O3 -march=pentium2 -fomit-frame-pointer -ffast-math -funroll-loops -funsafe-math-optimizations -Wall -W

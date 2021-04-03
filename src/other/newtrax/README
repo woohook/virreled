@@ -1,0 +1,89 @@
+These files are available under the GPL license, version 3 (see
+the file "COPYING" for details).
+
+To compile under GNU/Linux and possibly other operating systems
+which I haven't tested, run:
+
+./comp
+
+If it doesn't work, try:
+
+chmod 755 comp
+
+To run:
+
+./gentr2
+
+or
+
+./gentr2v
+
+or
+
+./gentr2b
+
+A track will be generated, based on an input file. For instance,
+"trk1" was the input file for "track1".
+
+Edit the output file to adjust lighting and background color
+(use the existing tracks as a model).
+
+
+The structure of the input file is:
+
+n1 t1
+n2 t2
+....
+....
+
+where t1, t2, ... are types of track elements and n1, n2, ... are
+the numbers of times each track element is repeated.
+
+The types of track elements are:
+
+0 - straight, horizontal
+1 - 22.5 degrees right, horizontal
+2 - 45 degrees right, horizontal
+3 - 22.5 degrees left, horizontal
+4 - 45 degrees left, horizontal
+5 - straight, slope 2:25
+6 - straight, slope 4:25
+7 - straight, slope 6:25
+8 - straight, slope -2:25
+9 - straight, slope -4:25
+10 - straight, slope -6:25
+11 - tunnel start, horizontal
+12 - tunnel, horizontal
+13 - tunnel end, horizontal
+14 - bridge start, slope 6:25
+15 - bridge, horizontal
+16 - bridge end, slope -6:25
+17 - bridge, slope 6:25
+18 - bridge, slope -6:25
+19...24 - different types of loops
+25 - corkscrew clockwise
+26 - corkscrew anti-clockwise
+27 - straight, slope 1:1
+28 - straight, slope 1:2
+29 - straight, slope -1:1
+30 - straight, slope -1:2
+31 - straight, with a hill on the right side
+32 - straight, with a hill on the left side
+33 - 22.5 right, slope 2:25
+34 - 22.5 left, slope 2:25
+35 - 22.5 right, slope -2:25
+36 - 22.5 left, slope -2:25
+37 - 22.5 right, slope 4:25
+38 - 22.5 left, slope 4:25
+39 - 22.5 right, slope -4:25
+40 - 22.5 left, slope -4:25
+41 - 22.5 right, slope 6:25
+42 - 22.5 left, slope 6:25
+43 - 22.5 right, slope -6:25
+44 - 22.5 left, slope -6:25
+45 - straight, wide, horizontal
+46 - 22.5 right, wide, horizontal
+47 - 22.5 left, wide, horizontal
+48 - transition from 2 to 4 lanes
+49 - transition from 4 to 2 lanes
+50...52 - rough terrain

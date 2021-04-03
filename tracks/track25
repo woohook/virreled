@@ -1,0 +1,13 @@
+ambient 0.4
+headlight 0.0
+directional 1.2
+lightdir -0.5 -1.4 0.3
+background 250 200 170
+clfactors 1.1 0.95 0.9
+objtypes 4
+data/steer.geo data/steer.col data/noref.ref data/nocl.cld
+data/speed.geo data/speed.col data/noref.ref data/nocl.cld
+data/dmod.geo data/dmod.col data/noref.ref data/nocl.cld
+newdata/kumbharlict.geo newdata/kumbharlict.col newdata/kumbharlict.ref data/nocl.cld
+objects 1
+4  -2.0 351.0 -310.0  0.0 0.0 0.0 2 0
