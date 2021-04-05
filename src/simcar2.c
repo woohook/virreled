@@ -47,7 +47,10 @@ void SDL_UpdateRect(SDL_Surface *screen,int a,int b,int c,int d)
 #include "readfile.h"
 #include "physics/physics.h"
 #include "time.h"
+#include "x11window.h"
 
+
+void handle_window_event(KeySym,int);
 
 /*print time*/
 void tmformat(REALN tm,char *s)
@@ -61,14 +64,19 @@ if(mn<10){s[3]='0';}
 if(sc<10){s[6]='0';}
 }
 
+int quit = 0;
+REALN af=0,bf=0,hbf=0; /*acceleration, brake and handbrake factors*/
+int turn, /*-1: left; 0: no turn; 1: right*/
+    dmode; /*1 forward, -1 reverse*/
+REALN vrotc,vrcmax,rotc; /*rot. speed and rotation of camera*/
+int camflag=2; /*number of objects and of object types*/
 
 int main(int argc,char *argv[])
 {char numefis[MAXWLG],s[10];
 
-int i,quit=0,
+int i,
     t0frame; /*t0frame - moment when image starts to be displayed*/
 
-SDL_Event event;
 SDL_Surface *screen;
 
 
@@ -77,7 +85,7 @@ REALN  zfog,zmax; /*zfog,zmax - distanta de la care incepe ceatza, respectiv de 
 lightpr light;
 
 sgob *objs,camera; /*objects*/
-int nob,nto,ntotrk,camflag=2; /*number of objects and of object types*/
+int nob,nto,ntotrk;
 
 vhc car; /*vehicle*/
 
@@ -88,13 +96,9 @@ REALN tframe=0,xan=0,/*tframe-time necessary for display; xan-number of displaye
 REALN vrx,vrxmax,vrxmr, /*rot. speed*/
       arx,arxmax,arxmr, /*rot. acceleration*/
       vrot3, /*rot. speed of level 3 objects*/
-      vrotc,vrcmax,rotc, /*rot. speed and rotation of camera*/
       realstep, /*real time step (s)*/
-      speed,dspeed,rotspeed,acc,
-      af=0,bf=0,hbf=0; /*acceleration, brake and handbrake factors*/
-int turn, /*-1: left; 0: no turn; 1: right*/
-    dmode, /*1 forward, -1 reverse*/
-    nstepsf; /*number of simulation steps/frame*/
+      speed,dspeed,rotspeed,acc;
+int nstepsf; /*number of simulation steps/frame*/
 /*for game^*/
 
 
@@ -138,6 +142,10 @@ screen=SDL_GetWindowSurface(RGLOBwindow);
 printf("Set %dx%dx%d\n",(screen->pitch)/(screen->format->BytesPerPixel),SCREENHEIGHT,screen->format->BitsPerPixel);
 
 SDL_ShowCursor(SDL_DISABLE);
+
+x11_display_open();
+x11_window_create(0,0,50,50/*SCREENWIDTH,SCREENHEIGHT*/);
+x11_set_key_handler(handle_window_event);
 
 vrx=0; arx=0;
 vrxmr=vrxmax=0.36;
@@ -230,78 +238,7 @@ odis(screen,objs,nob,backcol,zfog,zmax,&camera,&light); /*display image*/
 
 dstr+=(speed*tframe);
 
-
-while(SDL_PollEvent(&event)){
-switch(event.type){
-
-case SDL_KEYDOWN:
-	switch(event.key.keysym.sym){
-		case SDLK_q:
-		case SDLK_UP: af=dmode;
-		             break;
-		case SDLK_a:
-		case SDLK_DOWN: bf=1;
-		             break;
-		case SDLK_SPACE: hbf=1;
-		             break;
-		case SDLK_o:
-		case SDLK_LEFT: turn=-1;
-		             break;
-		case SDLK_p:
-		case SDLK_RIGHT: turn=1;
-		             break;
-
-		case SDLK_r: dmode=-dmode;
-		             break;
-		
-		case SDLK_c: camflag++; if(camflag>3){camflag=1;}
-		             rotc=0; vrotc=0;
-		             break;
-
-		case SDLK_n: vrotc=-vrcmax;
-		               break;
-
-		case SDLK_m: vrotc=vrcmax;
-		               break;
-
-		case SDLK_ESCAPE: quit=1;
-
-		default: break;
-	} break;
-case SDL_KEYUP:
-	switch(event.key.keysym.sym){
-		case SDLK_q:
-		case SDLK_UP: af=0;
-		             break;
-		case SDLK_a:
-		case SDLK_DOWN: bf=0;
-		             break;
-		case SDLK_SPACE: hbf=0;
-		             break;
-		case SDLK_o:
-		case SDLK_LEFT: if(turn==-1){turn=0;}
-		             break;
-		case SDLK_p:
-		case SDLK_RIGHT: if(turn==1){turn=0;}
-		             break;
-
-		case SDLK_r: af=0;
-		             break;
-
-		case SDLK_n: vrotc=0;
-		               break;
-
-		case SDLK_m: vrotc=0;
-		               break;
-
-		default: break;
-	} break;
-
-case SDL_QUIT: quit=1;
-
-default: break;
-}
-}
+    x11_process_events();
 }
 
 
@@ -330,4 +267,25 @@ quitSDE();
 
 odis(0,0,0,backcol,0,0,0,0); /*freed static variables from odis() in "camera.h"*/
 
+x11_window_destroy();
+x11_display_close();
+
 return 0;}
+
+void handle_window_event(KeySym key, int press)
+{
+  switch(key)
+  {
+    case 65307: quit = 1; break;
+    case 65362: if(press) af=dmode; else af=0; break;
+    case 65364: bf=press; break;
+    case ' ':   hbf=press; break;
+    case 65361: if(press) turn=-1; else if(turn==-1) turn = 0; break;
+    case 65363: if(press) turn=1;  else if(turn==1)  turn = 0; break;
+    case 'r':   if(press) dmode=-dmode; else af=0; break;
+    case 'c':   if(press) camflag++; if(camflag>3){camflag=1;} rotc=0; vrotc=0; break;
+    case 'n':   if(press) vrotc=-vrcmax; else vrotc = 0; break;
+    case 'm':   if(press) vrotc=vrcmax;  else vrotc = 0; break;
+    default: break;
+  }
+}
