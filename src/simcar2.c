@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <math.h>
 #include <string.h>
 #include <SDL.h>
-#include <time.h>
 
 #include "physics/dconfig.h"
 #include "physics/datastr.h"
@@ -47,6 +46,7 @@ void SDL_UpdateRect(SDL_Surface *screen,int a,int b,int c,int d)
 #include "camera.h"
 #include "readfile.h"
 #include "physics/physics.h"
+#include "time.h"
 
 
 /*print time*/
@@ -162,11 +162,11 @@ odis(screen,objs,nob,backcol,zfog,zmax,&camera,&light); /*display image*/
 SDL_Delay(200);
 
 
-while(!quit){
-
-/*t0frame=clock();*/
-t0frame=SDL_GetTicks();
-xan++;
+while(!quit)
+{
+  time_process_frame();
+  tframe = time_get_step_duration() / 1000.0;
+  xan++;
 
 if(speed<10){vrxmr=vrxmax; arxmr=arxmax;}
 else{
@@ -302,9 +302,6 @@ case SDL_QUIT: quit=1;
 default: break;
 }
 }
-
-/*tframe=(REALN)(clock()-t0frame)/CLOCKS_PER_SEC;*/
-tframe=(REALN)(SDL_GetTicks()-t0frame)/1000;
 }
 
 
