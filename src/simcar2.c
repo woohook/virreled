@@ -103,7 +103,6 @@ REALN vrx,vrxmax,vrxmr, /*rot. speed*/
 int turn, /*-1: left; 0: no turn; 1: right*/
     dmode, /*1 forward, -1 reverse*/
     nstepsf; /*number of simulation steps/frame*/
-FILE *repf;
 /*for game^*/
 
 
@@ -117,14 +116,6 @@ camera.vx[3]=0; camera.vy[3]=0; camera.vz[3]=1; /*set camera parameters*/
 
 if(argc<=2){printf("Error: Input files not specified\r\nExample: ./simcar cars/car1 tracks/track1\r\n");exit(1);}
 if(argc>=4){printf("Error: Too many arguments\r\n");exit(1);}
-
-
-#if REPLAY==1
-if(!(repf=fopen("replays/rep1","w"))){printf("Error: could not open 'replays/rep1' (check the permissions)\r\n"); exit(1);}
-fprintf(repf,"%s\r\n%s\r\n",argv[1],argv[2]);
-#else
-repf=NULL;
-#endif
 
 
 initSDE();
@@ -253,9 +244,8 @@ speed=0.1/realstep; /*decrease simulation speed if < 10fps*/
 if(nstepsf>(int)speed){nstepsf=(int)speed;}
 
 
-  runsteps(objs,nob,&car,realstep,nstepsf,vrx,af,bf,hbf,repf,&timp);
-
-/*^simulation - last 2 parameters are for saving replay data*/
+  runsteps(objs,nob,&car,realstep,nstepsf,vrx,af,bf,hbf);
+  timp += tframe;
 
 
 for(i=1;i<=nob;i++){
@@ -398,10 +388,6 @@ for(i=1;i<=ntotrk;i++){
   free(refglob[i].p3);
 }
 free(fceglob); free (refglob); free(objs);
-
-#if REPLAY==1
-fclose(repf);
-#endif
 
 /* printf("Press ENTER: ");getchar();printf("\r\n"); */
 

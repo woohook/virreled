@@ -78,13 +78,12 @@ switch(flag){
 
 /*run 1 simulation step; tstep - time step; af, bf - acceleration and brake factors
 neartr[][] - near triangles to check for contacts; nnt - number of near triangles*/
-void runsim(sgob *objs,int nob,vhc *car,REALN tstep,REALN af,REALN bf,REALN hbf,FILE *repf,REALN *timp,triangle **neartr,int nnt)
+void runsim(sgob *objs,int nob,vhc *car,REALN tstep,REALN af,REALN bf,REALN hbf,triangle **neartr,int nnt)
 {int i,j,nobtr; /*nobtr-number of objects in the track*/
 
 REALN pin=0,bkf=0,hbkf=0,
       mass,drc,
       *vel,vloc[3],aloc[3];
-static int rsem=0; /*when rsem==REPSTEPS, save replay data*/
 particle *part;
 
 nobtr=nob-car->nob;
@@ -142,51 +141,11 @@ stepSim(tstep);
 #if RCONTACTS==1
 rmContacts();
 #endif
-
-*timp+=tstep;
-
-
-#if REPLAY==1
-rsem++;
-if(rsem>=REPSTEPS){
-  for(i=1;i<=car->nob;i++){
-    j=car->oid[i];
-    part=&DGLOBpart[car->bid[i]];
-
-    objs[j].vx[0]=objs[j].xcen=part->pos[0];
-    objs[j].vy[0]=objs[j].ycen=part->pos[1];
-    objs[j].vz[0]=objs[j].zcen=part->pos[2];
-
-    objs[j].vx[1]=objs[j].vx[0]+part->vx[0];
-    objs[j].vy[1]=objs[j].vy[0]+part->vy[0];
-    objs[j].vz[1]=objs[j].vz[0]+part->vz[0];
-
-    objs[j].vx[2]=objs[j].vx[0]+part->vx[1];
-    objs[j].vy[2]=objs[j].vy[0]+part->vy[1];
-    objs[j].vz[2]=objs[j].vz[0]+part->vz[1];
-
-    objs[j].vx[3]=objs[j].vx[0]+part->vx[2];
-    objs[j].vy[3]=objs[j].vy[0]+part->vy[2];
-    objs[j].vz[3]=objs[j].vz[0]+part->vz[2];
-  } /*calculated object positions for replay*/
-  fprintf(repf,"%1.3f ",*timp);
-  for(i=1;i<=car->nob;i++){
-    j=car->oid[i];
-    fprintf(repf,"%1.3f %1.3f %1.3f ",objs[j].vx[0],objs[j].vy[0],objs[j].vz[0]);
-    fprintf(repf,"%1.3f %1.3f %1.3f ",objs[j].vx[1],objs[j].vy[1],objs[j].vz[1]);
-    fprintf(repf,"%1.3f %1.3f %1.3f ",objs[j].vx[2],objs[j].vy[2],objs[j].vz[2]);
-    fprintf(repf,"%1.3f %1.3f %1.3f ",objs[j].vx[3],objs[j].vy[3],objs[j].vz[3]);
-  }
-  fprintf(repf,"\r\n");
-  rsem=0;
-}
-#endif
-
 }
 
 
 /*run nsteps simulation steps*/
-void runsteps(sgob *objs,int nob,vhc *car,REALN tstep,int nsteps,REALN vrx,REALN af,REALN bf,REALN hbf,FILE *repf,REALN *timp)
+void runsteps(sgob *objs,int nob,vhc *car,REALN tstep,int nsteps,REALN vrx,REALN af,REALN bf,REALN hbf)
 {int i,j,nnt=0;
 triangle *neartr[MAXCTR],*trstart,*tr;
 REALN *pos,d,dmin,dx,dy,dz;
@@ -218,7 +177,7 @@ for(i=1;i<=(car->nj);i++){
 } /*rotate joints to steer instead of applying moment*/
 
 for(i=1;i<=nsteps;i++){
-  runsim(objs,nob,car,tstep,af,bf,hbf,repf,timp,neartr,nnt);
+  runsim(objs,nob,car,tstep,af,bf,hbf,neartr,nnt);
 }
 
 for(i=1;i<=(car->nj);i++){
