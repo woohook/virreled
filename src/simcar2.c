@@ -202,10 +202,10 @@ tframe=0.5; /*assuming 2 frames/second*/
 setcamg(&camera,&car,camflag);
 sprintf(textglob,"--READY--");
 odis(screen,objs,nob,backcol,zfog,zmax,&camera,&light); /*display image*/
-SDL_Delay(2000);
+SDL_Delay(200);
 sprintf(textglob,"---SET---");
 odis(screen,objs,nob,backcol,zfog,zmax,&camera,&light); /*display image*/
-SDL_Delay(2000);
+SDL_Delay(200);
 
 
 while(!quit){
