@@ -4,14 +4,10 @@ Simcar 5.2.0 - Car simulation with software 3D rendering (no 3D
 Copyright 2010-2014 Matei Petrescu
 
 
-The files here, except for "SDL.dll", "src/COPYING" and the files
-from directory "newdata", are available under the GNU GPL license,
-version 3 (see the file "src/COPYING" for details). The programs
-use the "SDL 1.2" library, available at www.libsdl.org, which is
-distributed under the GNU LGPL license, version 2 (www.gnu.org).
-The files from directory "newdata" can be modified and redistributed
-according to the terms of the Free Art License. More details are in
-"newdata/COPYING.txt"
+The files here, except for "src/COPYING", are available under the GNU GPL license,
+version 3 (see the file "src/COPYING" for details). 
+The SDL library is available at www.libsdl.org
+under the GNU LGPL license, version 2 (www.gnu.org).
 
 The recommendations below are for GNU/Linux, but should work for any
 Unix-type system which has the GNU tools installed.
@@ -70,27 +66,17 @@ After compilation, you can start the game by typing:
 
 Examples:
 
-./simcar cars/car1 tracks/track1
+./simcar data/car0/car0 tracks/track1
 
-./simcar cars/car3 tracks/track6
+./simcar data/car0/car0 tracks/track6
 
-28 tracks are available in the directory 'tracks'.
+22 tracks are available in the directory 'tracks'.
 
-Tracks 23 ... 28 were imported from TORCS ( http://torcs.sf.net , more
-details in directory "newdata").
+There is currently one car available:
 
-The parameters of the cars can easily be modified. Below are a few
-details about the 4 cars:
+car0: front wheel drive
 
-car1: open wheel, rear wheel drive, with wings which generate downforce
-car2: open wheel, rear wheel drive, without wings
-car3: rear wheel drive
-car4: 4 wheel drive
-
-All cars are electric and therefore don't need gearboxes. The 3D models
-were imported from TORCS ( http://torcs.org ) and Speed Dreams
-( http://speed-dreams.org ) and can be modified and redistributed
-according to the terms of the Free Art License.
+All cars are electric and therefore don't need gearboxes.
 
 The buttons which control the game are:
 
