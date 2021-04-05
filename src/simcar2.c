@@ -46,7 +46,7 @@ void SDL_UpdateRect(SDL_Surface *screen,int a,int b,int c,int d)
 #include "trans.h"
 #include "camera.h"
 #include "readfile.h"
-#include "game.h"
+#include "physics/physics.h"
 
 
 /*print time*/
