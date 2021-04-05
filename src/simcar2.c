@@ -72,14 +72,6 @@ SDL_Event event;
 SDL_Surface *screen;
 
 
-#if SOUND==1
-/* Open the audio device */
-SDL_AudioSpec *desired, *obtained;
-SDL_AudioSpec *hardware_spec;
-REALN volum[6]={0,0,0,0,0,0};
-#endif
-
-
 pixcol backcol; /*culoarea fundalului*/
 REALN  zfog,zmax; /*zfog,zmax - distanta de la care incepe ceatza, respectiv de la care nu se mai vede nimic*/
 lightpr light;
@@ -134,25 +126,6 @@ objs=readvehicle(numefis,objs,&nto,&nob,&car); /*read vehicle from file*/
 printf("\r\n");
 
 
-#if SOUND==1
-/* Allocate a desired SDL_AudioSpec */
-desired = (SDL_AudioSpec *)malloc(sizeof(SDL_AudioSpec));
-/* Allocate space for the obtained SDL_AudioSpec */
-obtained = (SDL_AudioSpec *)malloc(sizeof(SDL_AudioSpec));
-/* 22050Hz - FM Radio quality */
-desired->freq=22050;
-/* 16-bit signed audio */
-desired->format=AUDIO_U8;
-/* Mono */
-desired->channels=1;
-/* Large audio buffer reduces risk of dropouts but increases response time */
-desired->samples=1024; /*increase if using computer faster than 400MHz*/
-/* Our callback function */
-desired->callback=my_audio_callback;
-desired->userdata=volum;
-#endif
-
-
 /*Initialize SDL*/
 if(SDL_Init(SDL_INIT_VIDEO)<0){printf("Couldn't initialize SDL: %s\n", SDL_GetError());SDL_Quit();return 0;}
 /*Initialize display SDL2*/
@@ -165,25 +138,6 @@ screen=SDL_GetWindowSurface(RGLOBwindow);
 printf("Set %dx%dx%d\n",(screen->pitch)/(screen->format->BytesPerPixel),SCREENHEIGHT,screen->format->BitsPerPixel);
 
 SDL_ShowCursor(SDL_DISABLE);
-
-#if SOUND==1
-/* Open the audio device */
-if ( SDL_OpenAudio(desired, obtained) < 0 ){
-  fprintf(stderr, "Couldn't open audio: %s\n", SDL_GetError());
-  exit(-1);
-}
-/* desired spec is no longer needed */
-free(desired);
-hardware_spec=obtained;
-
-volum[2]=hardware_spec->format;
-volum[3]=hardware_spec->channels;
-volum[4]=hardware_spec->freq; /*pentru trimis la callback()*/
-
-/* Start playing */
-SDL_PauseAudio(0);
-#endif
-
 
 vrx=0; arx=0;
 vrxmr=vrxmax=0.36;
@@ -265,12 +219,6 @@ switch(dmode){
           break;
   default: break;
 }
-
-
-#if SOUND==1
-volum[1]=rotspeed; if (volum[1]>200){volum[1]=200;}
-volum[5]=acc;
-#endif
 
 
 setcamg(&camera,&car,camflag);
@@ -366,17 +314,7 @@ printf("Average speed: %1.2f km/h\r\n",3.6*dstr/timp);
 printf("Average framerate: %1.2f f/s\r\n\r\n",xan/timp);
 printf("**********************************************\r\n\r\n");
 
-#if SOUND==1
-/* Stop playing */
-SDL_PauseAudio(1);
-SDL_CloseAudio();
-#endif
-
 SDL_Quit();
-
-#if SOUND==1
-free(obtained);
-#endif
 
 for(i=1;i<=nto;i++){
   free(fceglob[i]);
