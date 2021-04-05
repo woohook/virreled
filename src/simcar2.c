@@ -23,10 +23,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <SDL.h>
 #include <time.h>
 
-#include "dyn/dconfig.h"
-#include "dyn/datastr.h"
-#include "dyn/transpart.h"
-#include "dyn/findcont.h"
+#include "physics/dconfig.h"
+#include "physics/datastr.h"
+#include "physics/transpart.h"
+#include "physics/findcont.h"
 
 #include "config.h"
 
