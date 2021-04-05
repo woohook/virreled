@@ -1,3 +1,0 @@
-gcc src/simcar.c -o simcar `sdl-config --cflags --libs` -lm -ldl -O3 -march=pentium3 -fomit-frame-pointer -funroll-loops -mfpmath=sse -Wall -W
-gcc src/sim-js.c -o sim-js `sdl-config --cflags --libs` -lm -ldl -O3 -march=pentium3 -fomit-frame-pointer -funroll-loops -mfpmath=sse -Wall -W
-gcc src/replay.c -o replay `sdl-config --cflags --libs` -lm -ldl -O3 -march=pentium3 -fomit-frame-pointer -funroll-loops -mfpmath=sse -Wall -W

@@ -1,3 +1,0 @@
-cd src/demogfx;
-gcc -c *.c `sdl-config --cflags --libs` -lm -ldl -O3 -march=pentium2 -fomit-frame-pointer -ffast-math -funroll-loops -funsafe-math-optimizations -fopenmp -Wall -W;
-cd ../..

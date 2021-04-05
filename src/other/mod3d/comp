@@ -1,1 +1,0 @@
-gcc mod3d.c -o mod3d -Wall -W

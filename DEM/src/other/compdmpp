@@ -1,1 +1,0 @@
-g++ demo.c *.o -o demo `sdl-config --cflags --libs` -lm -ldl -O3 -march=pentium2 -fomit-frame-pointer -ffast-math -funroll-loops -funsafe-math-optimizations -fopenmp -Wall -W
