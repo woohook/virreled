@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-#include <SDL.h>
 
 #include "physics/dconfig.h"
 #include "physics/datastr.h"
@@ -28,10 +27,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "physics/findcont.h"
 
 #include "config.h"
-
-SDL_Window *RGLOBwindow; /*for SDL 2*/
-void SDL_UpdateRect(SDL_Surface *screen,int a,int b,int c,int d)
-{SDL_UpdateWindowSurface(RGLOBwindow);}
 
 #include "render32.h"
 
@@ -71,9 +66,6 @@ int main(int argc,char *argv[])
 int i,
     t0frame; /*t0frame - moment when image starts to be displayed*/
 
-SDL_Surface *screen;
-
-
 pixcol backcol; /*culoarea fundalului*/
 REALN  zfog,zmax; /*zfog,zmax - distanta de la care incepe ceatza, respectiv de la care nu se mai vede nimic*/
 lightpr light;
@@ -107,7 +99,6 @@ camera.vx[3]=0; camera.vy[3]=0; camera.vz[3]=1; /*set camera parameters*/
 if(argc<=2){printf("Error: Input files not specified\r\nExample: ./simcar cars/car1 tracks/track1\r\n");exit(1);}
 if(argc>=4){printf("Error: Too many arguments\r\n");exit(1);}
 
-
 initSDE();
 setGravity(-9.81,0.0,0.0);
 
@@ -120,22 +111,6 @@ if(ntotrk==4){zfog=240; zmax=360;}else{zfog=80; zmax=120;}
 
 strcpy(numefis,argv[1]);
 objs=readvehicle(numefis,objs,&nto,&nob,&car); /*read vehicle from file*/
-
-printf("\r\n");
-
-
-/*Initialize SDL*/
-if(SDL_Init(SDL_INIT_VIDEO)<0){printf("Couldn't initialize SDL: %s\n", SDL_GetError());SDL_Quit();return 0;}
-/*Initialize display SDL2*/
-RGLOBwindow = SDL_CreateWindow(SIMCVER,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,SCREENWIDTH,SCREENHEIGHT,SDL_WINDOW_SHOWN);
-if(RGLOBwindow==NULL){
-  printf("Couldn't create window: %s\n",SDL_GetError());SDL_Quit();return 0;
-}
-screen=SDL_GetWindowSurface(RGLOBwindow);
-/*SDL2^*/
-printf("Set %dx%dx%d\n",(screen->pitch)/(screen->format->BytesPerPixel),SCREENHEIGHT,screen->format->BitsPerPixel);
-
-SDL_ShowCursor(SDL_DISABLE);
 
 x11_display_open();
 x11_window_create(0,0,SCREENWIDTH,SCREENHEIGHT);
@@ -154,15 +129,7 @@ rotc=0;
 timp=0,dstr=0; /*pornit cronometru*/
 tframe=0.5; /*assuming 2 frames/second*/
 
-
 setcamg(&camera,&car,camflag);
-sprintf(textglob,"--READY--");
-odis(screen,objs,nob,backcol,zfog,zmax,&camera,&light); /*display image*/
-SDL_Delay(200);
-sprintf(textglob,"---SET---");
-odis(screen,objs,nob,backcol,zfog,zmax,&camera,&light); /*display image*/
-SDL_Delay(200);
-
 
 while(!quit)
 {
@@ -214,13 +181,13 @@ rdspeed(&car,&speed,&rotspeed,&dspeed);
 acc=dspeed/tframe;
 
 tmformat(timp,s);
-switch(dmode){
-  case 1: sprintf(textglob,"%3.0f km/h   %s",speed*3.6,s);
-          break;
-  case -1: sprintf(textglob,"%3.0f km/h-R %s",speed*3.6,s);
-          break;
-  default: break;
-}
+//switch(dmode){
+//  case 1: sprintf(textglob,"%3.0f km/h   %s",speed*3.6,s);
+//          break;
+//  case -1: sprintf(textglob,"%3.0f km/h-R %s",speed*3.6,s);
+//          break;
+//  default: break;
+//}
 
 
 setcamg(&camera,&car,camflag);
@@ -228,7 +195,7 @@ setcamg(&camera,&car,camflag);
 rotc+=vrotc*tframe; if(camflag==2){rotc=0; vrotc=0;}
 if(rotc){rotatx(&camera,objs[car.oid[1]].vy[0],objs[car.oid[1]].vz[0],rotc);}
 
-odis(screen,objs,nob,backcol,zfog,zmax,&camera,&light); /*display image*/
+odis(objs,nob,backcol,zfog,zmax,&camera,&light); /*display image*/
 
 dstr+=(speed*tframe);
 
@@ -241,8 +208,6 @@ printf("\r\nDistance: %1.2f km\r\nTime: %1.2f seconds\r\n",dstr/1000,timp);
 printf("Average speed: %1.2f km/h\r\n",3.6*dstr/timp);
 printf("Average framerate: %1.2f f/s\r\n\r\n",xan/timp);
 printf("**********************************************\r\n\r\n");
-
-SDL_Quit();
 
 for(i=1;i<=nto;i++){
   free(fceglob[i]);
@@ -259,7 +224,7 @@ free(fceglob); free (refglob); free(objs);
 
 quitSDE();
 
-odis(0,0,0,backcol,0,0,0,0); /*freed static variables from odis() in "camera.h"*/
+odis(0,0,backcol,0,0,0,0); /*freed static variables from odis() in "camera.h"*/
 
 x11_window_destroy();
 x11_display_close();

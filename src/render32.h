@@ -16,8 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "sdltext.h"
-char textglob[MAXWLG];
+//char textglob[MAXWLG];
 
 typedef struct _pixcol
 {int red;int green;int blue; /*culoarea pixelului*/
@@ -49,6 +48,10 @@ REALN dx;
 REALN dy;
 REALN dz;
 } lightpr; /*light parameters*/
+
+#define PITCH (SCREENWIDTH*CLBITS/8)
+
+u_int8_t* pixels = 0;
 
 /*functie care elimina triunghiurile care sunt in plus*/
 int fclip(tria *face,int nrfaces,REALN zmin,tria *facedisp,REALN zmax,REALN tgh,REALN tgv)
@@ -217,9 +220,9 @@ void findplan(tria *face,int i,REALN *a,REALN *b,REALN *c,REALN *d)
 }
 
 
-void displaysdl(SDL_Surface *screen,tria *face,int nrfaces,REALN *distmin,unsigned int width,unsigned int height,REALN focal,pixcol backcol,REALN zfog,REALN zmax,lightpr *light)
+void display(tria *face,int nrfaces,REALN *distmin,unsigned int width,unsigned int height,REALN focal,pixcol backcol,REALN zfog,REALN zmax,lightpr *light)
 {int i,j,jmin,jmax,xcr,ycr,isp,bitd,red,green,blue,red0,green0,blue0;
-Uint8 *ptr;
+u_int8_t *ptr;
 pixcol pixcb; /*culoarea pixelului curent*/
 REALN ystart,yend,zf,dist;
 unsigned long int idx,crf,area;
@@ -246,15 +249,12 @@ izmax=1/zmax; izfog=1/zfog;
 
 bitd=CLBITS/8;
 
+if(pixels == 0) pixels = (u_int8_t*)malloc(SCREENHEIGHT*PITCH);
+
 /*desenare imagine*/
 for(i=0;i<=(int)area;i++){distmin[i]=izmax;}
 zf=-focal;
 izf=1/zf;
-
-/*Lock screen*/
-if(SDL_MUSTLOCK(screen)){
-  if(SDL_LockSurface(screen)<0){
-    printf("Can't lock screen: %s\n", SDL_GetError());SDL_Quit();return;}}
 
 for(crf=1;(int)crf<=nrfaces;crf++){
 
@@ -324,7 +324,7 @@ face[crf].blued=blue;
 
 for(i=lim.imin;i<=lim.imax;i++){
 
-    isp=i*screen->pitch;
+    isp=i*PITCH;
 
     xcr=-(int)(height>>1)+i;
 
@@ -348,9 +348,9 @@ for(i=lim.imin;i<=lim.imax;i++){
     if(jmax>((int)width-1)){jmax=(int)width-1;}
 
 #if DOUBLEPIX==0
-  ptr=(Uint8 *)screen->pixels+isp+jmin*bitd;
+  ptr=pixels+isp+jmin*bitd;
 #else
-  ptr=(Uint8 *)screen->pixels+2*isp+jmin*bitd*2;
+  ptr=pixels+2*isp+jmin*bitd*2;
 #endif
 
   idx=i*width+jmin;
@@ -383,10 +383,10 @@ for(j=0;j<=(int)height-1;j++){
   backcol.red=(int)redf; backcol.green=(int)greenf; backcol.blue=(int)bluef;
 
 #if DOUBLEPIX==0
-  ptr=(Uint8 *)screen->pixels + j*screen->pitch;
+  ptr=pixels + j*PITCH;
 #else
-  ptr=(Uint8 *)screen->pixels + 2*j*screen->pitch;
-  isp=screen->pitch;
+  ptr=pixels + 2*j*PITCH;
+  isp=PITCH;
 #endif
 
 for(i=0;i<=(int)width-1;i++){
@@ -413,7 +413,7 @@ if(distmin[++crf]==izmax){
         ptr[2] = pixcb.red;
       }}
 
-  uint32_t color = ptr[2];
+  u_int32_t color = ptr[2];
   color = (color<<8) + ptr[1];
   color = (color<<8) + ptr[0];
   x11_set_pixel(i,j,color);
@@ -433,16 +433,10 @@ if(distmin[++crf]==izmax){
 width*=2; height*=2;
 #endif
 
-dtext(screen,textglob,0.35*width,0.05*height,30);
-dtext(screen,textglob,0.35*width+1,0.05*height,30);
-dtext(screen,textglob,0.35*width,0.05*height+1,30);
-dtext(screen,textglob,0.35*width+1,0.05*height+1,30);
-
-/*Unlock screen*/
-if(SDL_MUSTLOCK(screen)){SDL_UnlockSurface(screen);}
-/* Update display*/
-  SDL_UpdateRect(screen, 0, 0, 0, 0);
-/*desenat imagine*/
+//dtext(screen,textglob,0.35*width,0.05*height,30);
+//dtext(screen,textglob,0.35*width+1,0.05*height,30);
+//dtext(screen,textglob,0.35*width,0.05*height+1,30);
+//dtext(screen,textglob,0.35*width+1,0.05*height+1,30);
 }
 
 

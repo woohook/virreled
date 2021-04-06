@@ -66,14 +66,14 @@ switch(flag){
 /*function which displays the objcts which are closer than zmax
 nob - total number of objects
 cam - camera*/
-void odis(SDL_Surface *screen,sgob *objs,int nob,pixcol backcol,REALN zfog,REALN zmax,sgob *cam,lightpr *light)
+void odis(sgob *objs,int nob,pixcol backcol,REALN zfog,REALN zmax,sgob *cam,lightpr *light)
 {int i,j,focal;
 unsigned int width,height;
 unsigned long int area;
 static int sem=0,nrfm=0; /*number of triangles for which memory has been allocated*/
 static tria *face,*facedisp; /*triangles and displayed triangles in global system*/
 static sgob *obdis; /*displayed objects (copies)*/
-static REALN *distmin; /*Zbuffer for sending to displaysdl()*/
+static REALN *distmin; /*Zbuffer for sending to display()*/
 int nrfaces,nrdisp,crf, /*number of triangles and of displayed triangles, current triangle*/
     nobdis=0; /*number of displayed objects*/
 
@@ -219,7 +219,7 @@ for(i=1;i<=nobdis;i++){
 
 nrdisp=fclip(face,nrfaces,zmin,facedisp,zmax,tgh,tgv);
 
-displaysdl(screen,facedisp,nrdisp,distmin,width,height,focal,backcol,zfog,zmax,&rotlight);
+display(facedisp,nrdisp,distmin,width,height,focal,backcol,zfog,zmax,&rotlight);
 
 x11_flush();
 }
