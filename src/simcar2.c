@@ -138,7 +138,7 @@ printf("Set %dx%dx%d\n",(screen->pitch)/(screen->format->BytesPerPixel),SCREENHE
 SDL_ShowCursor(SDL_DISABLE);
 
 x11_display_open();
-x11_window_create(0,0,50,50/*SCREENWIDTH,SCREENHEIGHT*/);
+x11_window_create(0,0,SCREENWIDTH,SCREENHEIGHT);
 x11_set_key_handler(handle_window_event);
 
 vrx=0; arx=0;

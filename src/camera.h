@@ -221,4 +221,5 @@ nrdisp=fclip(face,nrfaces,zmin,facedisp,zmax,tgh,tgv);
 
 displaysdl(screen,facedisp,nrdisp,distmin,width,height,focal,backcol,zfog,zmax,&rotlight);
 
+x11_flush();
 }
