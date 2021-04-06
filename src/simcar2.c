@@ -33,13 +33,7 @@ SDL_Window *RGLOBwindow; /*for SDL 2*/
 void SDL_UpdateRect(SDL_Surface *screen,int a,int b,int c,int d)
 {SDL_UpdateWindowSurface(RGLOBwindow);}
 
-#if CLBITS==16
-  #include "render16.h"
-#elif CLBITS==24
-  #include "render32.h"
-#elif CLBITS==32
-  #include "render32.h"
-#endif
+#include "render32.h"
 
 #include "defstr.h"
 #include "trans.h"
