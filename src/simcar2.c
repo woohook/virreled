@@ -21,6 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <math.h>
 #include <string.h>
 
+#include "time/time.h"
+#include "display/display.h"
+
 #include "physics/dconfig.h"
 #include "physics/datastr.h"
 #include "physics/transpart.h"
@@ -35,8 +38,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "camera.h"
 #include "readfile.h"
 #include "physics/physics.h"
-#include "time/time.h"
-#include "x11window.h"
 
 
 void handle_window_event(KeySym,int);
