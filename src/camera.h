@@ -221,5 +221,5 @@ nrdisp=fclip(face,nrfaces,zmin,facedisp,zmax,tgh,tgv);
 
 display(facedisp,nrdisp,distmin,width,height,focal,backcol,zfog,zmax,&rotlight);
 
-x11_flush();
+window_flush();
 }

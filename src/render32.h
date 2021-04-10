@@ -416,7 +416,7 @@ if(distmin[++crf]==izmax){
   u_int32_t color = ptr[2];
   color = (color<<8) + ptr[1];
   color = (color<<8) + ptr[0];
-  x11_set_pixel(i,j,color);
+  window_set_pixel(i,j,color);
 
 #if DOUBLEPIX==0
     ptr+=bitd;

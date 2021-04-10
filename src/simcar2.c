@@ -112,9 +112,8 @@ if(ntotrk==4){zfog=240; zmax=360;}else{zfog=80; zmax=120;}
 strcpy(numefis,argv[1]);
 objs=readvehicle(numefis,objs,&nto,&nob,&car); /*read vehicle from file*/
 
-x11_display_open();
-x11_window_create(0,0,SCREENWIDTH,SCREENHEIGHT);
-x11_set_key_handler(handle_window_event);
+window_create(0,0,SCREENWIDTH,SCREENHEIGHT);
+window_set_key_handler(handle_window_event);
 
 vrx=0; arx=0;
 vrxmr=vrxmax=0.36;
@@ -199,7 +198,7 @@ odis(objs,nob,backcol,zfog,zmax,&camera,&light); /*display image*/
 
 dstr+=(speed*tframe);
 
-    x11_process_events();
+    window_process_events();
 }
 
 
@@ -226,8 +225,7 @@ quitSDE();
 
 odis(0,0,backcol,0,0,0,0); /*freed static variables from odis() in "camera.h"*/
 
-x11_window_destroy();
-x11_display_close();
+window_destroy();
 
 return 0;}
 

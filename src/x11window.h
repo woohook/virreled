@@ -21,7 +21,7 @@ XWindowAttributes g_windowAttributes;
 
 void (*g_key_event_handler)(KeySym,int) = 0;
 
-void x11_display_open()
+void _x11_display_open()
 {
   g_display = XOpenDisplay(NULL);
   if(g_display == NULL)
@@ -40,7 +40,7 @@ void x11_display_open()
   }
 }
 
-void x11_display_close()
+void _x11_display_close()
 {
   XCloseDisplay(g_display);
 
@@ -48,11 +48,11 @@ void x11_display_close()
   g_display = NULL;
 }
 
-void x11_window_create(int x, int y, unsigned int width, unsigned int height)
+void window_create(int x, int y, unsigned int width, unsigned int height)
 {
   const unsigned int border_width = 1;
 
-  x11_display_open();
+  _x11_display_open();
 
   g_window = XCreateSimpleWindow(g_display, RootWindow(g_display, g_screen), x, y, width, height, border_width,
                                  BlackPixel(g_display, g_screen), WhitePixel(g_display, g_screen));
@@ -70,7 +70,7 @@ void x11_window_create(int x, int y, unsigned int width, unsigned int height)
   XSync(g_display, g_window);
 }
 
-void x11_flush()
+void window_flush()
 {
   XPutImage(g_display, g_window, g_gfxContext, g_image, 0, 0, 0, 0, g_windowAttributes.width, g_windowAttributes.height);
 
@@ -78,31 +78,31 @@ void x11_flush()
 }
 
 // x11_set_pixel(x, y, ((red&255)<<16) + ((green&255)<<8) + (blue&255));
-void x11_set_pixel(int x, int y, int color)
+void window_set_pixel(int x, int y, int color)
 {
   g_imagedata[(y*g_windowAttributes.width + x)*4 + 0] = color&255;
   g_imagedata[(y*g_windowAttributes.width + x)*4 + 1] = (color>>8)&255;
   g_imagedata[(y*g_windowAttributes.width + x)*4 + 2] = (color>>16)&255;
 }
 
-void x11_window_destroy()
+void window_destroy()
 {
   XDestroyWindow(g_display, g_window);
   XDestroyImage(g_image);
   XFreeGC(g_display, g_gfxContext);
   XSync(g_display, 0);
 
-  x11_display_close();
+  _x11_display_close();
 
   g_window = 0;
 }
 
-void x11_set_key_handler(void (*key_event_handler)(KeySym,int))
+void window_set_key_handler(void (*key_event_handler)(KeySym,int))
 {
   g_key_event_handler = key_event_handler;
 }
 
-void x11_process_events()
+void window_process_events()
 {
   XEvent event;
 
