@@ -1,15 +1,13 @@
-#include <time.h>
+#ifdef __linux__
+#include "linux/time_linux.h"
+#endif
 
 int g_time_millies_last  = -1;
 int g_time_frame_millies = 0;
 
 void time_process_frame()
 {
-  struct timespec now = {0,0};
-
-  clock_gettime(CLOCK_MONOTONIC, &now);
-
-  int millies = now.tv_nsec / 1000000;
+  int millies = _time_get_milliseconds_fraction();
 
   if(g_time_millies_last != -1)
   {

@@ -35,7 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "camera.h"
 #include "readfile.h"
 #include "physics/physics.h"
-#include "time.h"
+#include "time/time.h"
 #include "x11window.h"
 
 
