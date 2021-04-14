@@ -19,7 +19,7 @@ char* g_imagedata = 0;
 
 XWindowAttributes g_windowAttributes;
 
-void (*g_key_event_handler)(KeySym,int) = 0;
+void (*g_key_event_handler)(unsigned int,int) = 0;
 
 void _x11_display_open()
 {
@@ -97,7 +97,7 @@ void window_destroy()
   g_window = 0;
 }
 
-void window_set_key_handler(void (*key_event_handler)(KeySym,int))
+void window_set_key_handler(void (*key_event_handler)(unsigned int,int))
 {
   g_key_event_handler = key_event_handler;
 }

@@ -40,7 +40,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "physics/physics.h"
 
 
-void handle_window_event(KeySym,int);
+void handle_window_event(unsigned int,int);
 
 /*print time*/
 void tmformat(REALN tm,char *s)
@@ -230,7 +230,7 @@ window_destroy();
 
 return 0;}
 
-void handle_window_event(KeySym key, int press)
+void handle_window_event(unsigned int key, int press)
 {
   switch(key)
   {
