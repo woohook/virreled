@@ -51,7 +51,7 @@ REALN dz;
 
 #define PITCH (SCREENWIDTH*CLBITS/8)
 
-u_int8_t* pixels = 0;
+unsigned char* pixels = 0;
 
 /*functie care elimina triunghiurile care sunt in plus*/
 int fclip(tria *face,int nrfaces,REALN zmin,tria *facedisp,REALN zmax,REALN tgh,REALN tgv)
@@ -222,7 +222,7 @@ void findplan(tria *face,int i,REALN *a,REALN *b,REALN *c,REALN *d)
 
 void display(tria *face,int nrfaces,REALN *distmin,unsigned int width,unsigned int height,REALN focal,pixcol backcol,REALN zfog,REALN zmax,lightpr *light)
 {int i,j,jmin,jmax,xcr,ycr,isp,bitd,red,green,blue,red0,green0,blue0;
-u_int8_t *ptr;
+unsigned char *ptr;
 pixcol pixcb; /*culoarea pixelului curent*/
 REALN ystart,yend,zf,dist;
 unsigned long int idx,crf,area;
@@ -249,7 +249,7 @@ izmax=1/zmax; izfog=1/zfog;
 
 bitd=CLBITS/8;
 
-if(pixels == 0) pixels = (u_int8_t*)malloc(SCREENHEIGHT*PITCH);
+if(pixels == 0) pixels = (unsigned char*)malloc(SCREENHEIGHT*PITCH);
 
 /*desenare imagine*/
 for(i=0;i<=(int)area;i++){distmin[i]=izmax;}
@@ -413,7 +413,7 @@ if(distmin[++crf]==izmax){
         ptr[2] = pixcb.red;
       }}
 
-  u_int32_t color = ptr[2];
+  unsigned int color = ptr[2];
   color = (color<<8) + ptr[1];
   color = (color<<8) + ptr[0];
   window_set_pixel(i,j,color);
