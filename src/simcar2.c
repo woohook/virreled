@@ -61,7 +61,7 @@ int turn, /*-1: left; 0: no turn; 1: right*/
 REALN vrotc,vrcmax,rotc; /*rot. speed and rotation of camera*/
 int camflag=2; /*number of objects and of object types*/
 
-int main(int argc,char *argv[])
+int run(const char* pCarFile, const char* pTrackFile)
 {char numefis[MAXWLG],s[10];
 
 int i,
@@ -97,20 +97,17 @@ camera.vx[1]=1; camera.vy[1]=0; camera.vz[1]=0;
 camera.vx[2]=0; camera.vy[2]=1; camera.vz[2]=0;
 camera.vx[3]=0; camera.vy[3]=0; camera.vz[3]=1; /*set camera parameters*/
 
-if(argc<=2){printf("Error: Input files not specified\r\nExample: ./simcar cars/car1 tracks/track1\r\n");exit(1);}
-if(argc>=4){printf("Error: Too many arguments\r\n");exit(1);}
-
 initSDE();
 setGravity(-9.81,0.0,0.0);
 
 
-strcpy(numefis,argv[2]);
+strcpy(numefis,pTrackFile);
 objs=readtrack(numefis,&nob,&nto,&backcol,&light); /*read objects from file*/
 
 ntotrk=nto;
 if(ntotrk==4){zfog=240; zmax=360;}else{zfog=80; zmax=120;}
 
-strcpy(numefis,argv[1]);
+strcpy(numefis,pCarFile);
 objs=readvehicle(numefis,objs,&nto,&nob,&car); /*read vehicle from file*/
 
 window_create(0,0,SCREENWIDTH,SCREENHEIGHT);
@@ -246,4 +243,12 @@ void handle_window_event(unsigned int key, int press)
     case 'm':   if(press) vrotc=vrcmax;  else vrotc = 0; break;
     default: break;
   }
+}
+
+int main(int argc,char *argv[])
+{
+  if(argc<=2){printf("Error: Input files not specified\r\nExample: ./simcar cars/car1 tracks/track1\r\n");exit(1);}
+  if(argc>=4){printf("Error: Too many arguments\r\n");exit(1);}
+
+  return run(argv[1], argv[2]);
 }
