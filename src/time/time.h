@@ -2,6 +2,10 @@
 #include "linux/time_linux.h"
 #endif
 
+#ifdef _WIN32
+#include "mswindows/time_mswindows.h"
+#endif
+
 int g_time_millies_last  = -1;
 int g_time_frame_millies = 0;
 
