@@ -1,0 +1,17 @@
+camera 0.7 0 0.05
+objtypes 3
+data/cdt1.geo data/cdt4.col data/cdt1.cld
+data/wheel.geo data/wheel.col data/wheel.cld
+data/wheel3.geo data/wheel.col data/wheel.cld
+objects 5
+1 1  2.9 0 14  0.4 3.73 1000 0.7
+3 3  2.7 -0.8 12.9  0.4 0.1865 1000 1.6
+3 3  2.7 0.8 12.9  0.4 0.1865 1000 1.6
+2 4  2.7 -0.7 15.1  0.4 0.1865 1000 1.6
+2 4  2.7 0.7 15.1  0.4 0.1865 1000 1.6
+accel 1.5
+brake 0.75
+spring 100
+damper 7
+drag 0
+downforce 0
