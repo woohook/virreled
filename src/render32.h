@@ -252,8 +252,8 @@ bitd=CLBITS/8;
 
 if(pixels == 0)
 {
-  g_screen_pitch = SCREENWIDTH*CLBITS/8;
-  pixels = (unsigned char*)malloc(SCREENHEIGHT*g_screen_pitch);
+  g_screen_pitch = g_screen_width*CLBITS/8;
+  pixels = (unsigned char*)malloc(g_screen_height*g_screen_pitch);
 }
 
 /*desenare imagine*/

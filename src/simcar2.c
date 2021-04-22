@@ -33,6 +33,9 @@ int quit = 0;
 
 #include "config.h"
 
+unsigned int g_screen_width  = 800;
+unsigned int g_screen_height = 600;
+
 #include "render32.h"
 
 #include "defstr.h"
@@ -40,7 +43,6 @@ int quit = 0;
 #include "camera.h"
 #include "readfile.h"
 #include "physics/physics.h"
-
 
 void handle_key_event(unsigned int,int);
 
@@ -111,7 +113,7 @@ if(ntotrk==4){zfog=240; zmax=360;}else{zfog=80; zmax=120;}
 strcpy(numefis,pCarFile);
 objs=readvehicle(numefis,objs,&nto,&nob,&car); /*read vehicle from file*/
 
-window_create(0,0,SCREENWIDTH,SCREENHEIGHT);
+window_create(0,0,g_screen_width,g_screen_height);
 window_set_key_handler(handle_key_event);
 
 vrx=0; arx=0;

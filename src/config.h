@@ -19,15 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define REALN float
 /*this can be "float" or "double"*/
 
-#define SCREENWIDTH 800
-/*screen width (pixels)*/
-
-#define SCREENHEIGHT 600
-/*screen height (pixels)*/
-
-#define SDLSCREENFLAG SDL_SWSURFACE
-/*SDL_FULLSCREEN or SDL_SWSURFACE*/
-
 #define CLBITS 32
 /*number of colour bits; can be 16, 24 or 32*/
 
