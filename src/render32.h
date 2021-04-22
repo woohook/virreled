@@ -49,7 +49,7 @@ REALN dy;
 REALN dz;
 } lightpr; /*light parameters*/
 
-#define PITCH (SCREENWIDTH*CLBITS/8)
+unsigned int g_screen_pitch = 0;
 
 unsigned char* pixels = 0;
 
@@ -249,7 +249,12 @@ izmax=1/zmax; izfog=1/zfog;
 
 bitd=CLBITS/8;
 
-if(pixels == 0) pixels = (unsigned char*)malloc(SCREENHEIGHT*PITCH);
+
+if(pixels == 0)
+{
+  g_screen_pitch = SCREENWIDTH*CLBITS/8;
+  pixels = (unsigned char*)malloc(SCREENHEIGHT*g_screen_pitch);
+}
 
 /*desenare imagine*/
 for(i=0;i<=(int)area;i++){distmin[i]=izmax;}
@@ -324,7 +329,7 @@ face[crf].blued=blue;
 
 for(i=lim.imin;i<=lim.imax;i++){
 
-    isp=i*PITCH;
+    isp=i*g_screen_pitch;
 
     xcr=-(int)(height>>1)+i;
 
@@ -383,10 +388,10 @@ for(j=0;j<=(int)height-1;j++){
   backcol.red=(int)redf; backcol.green=(int)greenf; backcol.blue=(int)bluef;
 
 #if DOUBLEPIX==0
-  ptr=pixels + j*PITCH;
+  ptr=pixels + j*g_screen_pitch;
 #else
-  ptr=pixels + 2*j*PITCH;
-  isp=PITCH;
+  ptr=pixels + 2*j*g_screen_pitch;
+  isp=g_screen_pitch;
 #endif
 
 for(i=0;i<=(int)width-1;i++){
