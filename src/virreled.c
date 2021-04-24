@@ -277,7 +277,7 @@ int main(int argc,char *argv[])
 {
 #endif
 
-  if(argc<=2){printf("Error: Input files not specified\r\nExample: ./simcar cars/car1 tracks/track1 800 600\r\n");exit(1);}
+  if(argc<=2){printf("Error: Input files not specified\r\nExample: ./virreled cars/car1 tracks/track1 800 600\r\n");exit(1);}
   if(argc>=6){printf("Error: Too many arguments\r\n");exit(1);}
 
   if(argc==5)

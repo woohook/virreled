@@ -60,7 +60,7 @@ typedef struct _vhc
 {int nob; /*number of objects in vehicle*/
 int nj; /*number of joints*/
 
-int oid[21]; /*number of object (rendering and collision) in 'objs' array from 'simcar.c'*/
+int oid[21]; /*number of object (rendering and collision) in 'objs' array from 'virreled.c'*/
 int bid[21]; /*particles*/
 joint *jid[21]; /*joints*/
 REALD jax[21][3]; /*joint rotation points*/

@@ -43,6 +43,3 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #define GRAVITY -9.81
 /*gravitational acceleration (m/s2)*/
-
-#define SIMCVER "Simcar - 5.2.0"
-/*version*/

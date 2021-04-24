@@ -1,3 +1,9 @@
+Virreled is currently a fork of simcar without sound and SDL.
+This file is the original readme of simcar.
+Most of the information also applies to virreled.
+
+----------------------------------------------------------------
+
 Simcar 5.2.0 - Car simulation with software 3D rendering (no 3D
                acceleration required or available)
 
