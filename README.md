@@ -3,8 +3,9 @@ I was looking for a title for a little 3D game, something that sounded like "wor
 
 Currently virreled is just a fork of Victor Matei Petrescu's [simcar](https://sourceforge.net/projects/simple3d/) game
 * without sound
-* without dependencies to the SDL library
+* without replays
 * without the high-detail TORCS/Speed Dreams models
+* without dependencies to the SDL library
 
 for Linux and Windows
 
