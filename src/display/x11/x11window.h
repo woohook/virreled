@@ -57,6 +57,7 @@ void window_create(int x, int y, unsigned int width, unsigned int height)
   g_window = XCreateSimpleWindow(g_display, RootWindow(g_display, g_screen), x, y, width, height, border_width,
                                  BlackPixel(g_display, g_screen), WhitePixel(g_display, g_screen));
 
+  XStoreName(g_display, g_window, "virreled");
   XSelectInput(g_display, g_window, ExposureMask | KeyPressMask | KeyReleaseMask);
 
   g_gfxContext = XCreateGC(g_display, g_window, 0, 0);
