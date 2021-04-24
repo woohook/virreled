@@ -70,7 +70,7 @@ struct _joint *next;
 
 
 /*cross product between a[3] and b[3]*/
-inline void crossProd(REALD *a,REALD *b,REALD *c)
+void crossProd(REALD *a,REALD *b,REALD *c)
 {c[0]=a[1]*b[2]-a[2]*b[1];
  c[1]=a[2]*b[0]-a[0]*b[2];
  c[2]=a[0]*b[1]-a[1]*b[0];
