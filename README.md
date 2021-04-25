@@ -1,5 +1,7 @@
 # virreled
 
+![virreled](virreled.png)
+
 I was looking for a title for a little 3D game, something that sounded like "world". And I ended up with "virreled".
 
 Currently virreled is just a fork of Victor Matei Petrescu's [simcar](https://sourceforge.net/projects/simple3d/) game
