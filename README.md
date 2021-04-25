@@ -1,4 +1,5 @@
 # virreled
+
 I was looking for a title for a little 3D game, something that sounded like "world". And I ended up with "virreled".
 
 Currently virreled is just a fork of Victor Matei Petrescu's [simcar](https://sourceforge.net/projects/simple3d/) game
@@ -20,11 +21,10 @@ Compile with:
 or use the build.sh script.
 
 ### On Windows
-You need a C compiler (e.g. tcc), the windows headers (libx11-dev or -devel)
 You need a C compiler (e.g. tcc), the C standard library headers, and the windows headers.
 
 Compile with:
-> tcc.exe src/virreled.c -o virreled -lm -lX11
+> tcc.exe src/virreled.c
 
 ## Running the game
 Start the game by specifying car and track:
