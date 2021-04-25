@@ -40,3 +40,14 @@ Start the game by specifying car and track:
 ### Setting the window size
 You can optionally specify the window size by appending the desired width and height in pixels as parameters
 > virreled cars/car4 tracks/track22 1024 768
+
+### Keyboard Controls
+* UP - accelerate
+* DOWN - brake
+* LEFT - left
+* RIGHT - right
+* SPACE - handbrake
+* R - reverse
+* C - change camera
+* N and M - rotate camera
+* ESCAPE - exit
