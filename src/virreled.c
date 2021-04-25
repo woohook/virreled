@@ -270,7 +270,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
   char pScreenWidth[5];
   char pScreenHeight[5];
   char* argv[5] = {0,pCarFile,pTrackFile, pScreenWidth, pScreenHeight};
-  int argc = sscanf(lpCmdLine, "%255s %255s %4s %4s", &pCarFile, &pTrackFile &pScreenWidth, &pScreenHeight) + 1;
+  int argc = sscanf(lpCmdLine, "%255s %255s %4s %4s", &pCarFile, &pTrackFile, &pScreenWidth, &pScreenHeight) + 1;
 
 #else
 int main(int argc,char *argv[])
