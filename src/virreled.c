@@ -265,20 +265,31 @@ void handle_key_event(unsigned int key, int press)
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
   g_hInstance = hInstance;
-  char pCarFile[256];
-  char pTrackFile[256];
-  char pScreenWidth[5];
-  char pScreenHeight[5];
-  char* argv[5] = {0,pCarFile,pTrackFile, pScreenWidth, pScreenHeight};
-  int argc = sscanf(lpCmdLine, "%255s %255s %4s %4s", &pCarFile, &pTrackFile, &pScreenWidth, &pScreenHeight) + 1;
+  char carFile[256];
+  char trackFile[256];
+  char screenWidth[5];
+  char screenHeight[5];
+  char* argv[5] = {0,carFile,trackFile, screenWidth, screenHeight};
+  int argc = sscanf(lpCmdLine, "%255s %255s %4s %4s", &carFile, &trackFile, &screenWidth, &screenHeight) + 1;
 
 #else
 int main(int argc,char *argv[])
 {
 #endif
+  char* pCarFile   = "cars/car2";
+  char* pTrackFile = "tracks/track9";
 
-  if(argc<=2){printf("Error: Input files not specified\r\nExample: ./virreled cars/car1 tracks/track1 800 600\r\n");exit(1);}
-  if(argc>=6){printf("Error: Too many arguments\r\n");exit(1);}
+  if(argc>=6){printf("Error: Too many arguments\nExample: ./virreled cars/car1 tracks/track1 800 600\r\n");exit(1);}
+
+  if(argc > 1)
+  {
+    pCarFile = argv[1];
+  }
+
+  if(argc > 2)
+  {
+    pTrackFile = argv[2];
+  }
 
   if(argc==5)
   {
@@ -291,5 +302,5 @@ int main(int argc,char *argv[])
   if(g_screen_height < 10) {printf("Error: Screen height less than 10 not supported!\n"); exit(1);}
   if(g_screen_height > 4096) {printf("Error: Screen height greater than 4096 not supported!\n"); exit(1);}
 
-  return run(argv[1], argv[2]);
+  return run(pCarFile, pTrackFile);
 }
