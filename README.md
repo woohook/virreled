@@ -29,7 +29,9 @@ Compile with:
 > tcc.exe src/virreled.c
 
 ## Running the game
-Start the game by specifying car and track:
+Start the virreled executable to run the game.
+
+Car and track can be selected via additional command line arguments:
 
 ### On Linux
 > ./virreled cars/car4 tracks/track22
