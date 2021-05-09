@@ -57,6 +57,8 @@ if(hr<10){s[0]='0';}
 if(mn<10){s[3]='0';}
 if(sc<10){s[6]='0';}
 }
+int turning = 0;
+int jump = 0;
 int left = 0;
 REALN af=0,bf=0,hbf=0,fwd=-1; /*acceleration, brake and handbrake factors*/
 int turn, /*-1: left; 0: no turn; 1: right*/
@@ -177,7 +179,11 @@ for(i=1;i<=nob;i++){
   }
 }
 
-if(fwd>-0.125) forward(1,fwd,left);
+if(fwd>-0.125)
+{
+  left = (left + turning) % 256;
+  forward(1,fwd,left,jump);
+}
 
 rdspeed(&car,&speed,&rotspeed,&dspeed);
 acc=dspeed/tframe;
@@ -251,7 +257,7 @@ void handle_key_event(unsigned int key, int press)
     case 65307: quit = 1; break;
     case 65362: if(press) af=dmode; else af=0; break;
     case 65364: bf=press; break;
-    case ' ':   hbf=press; break;
+    case ' ':   jump = press; hbf=press; break;
     case 65361: if(press) turn=-1; else if(turn==-1) turn = 0; break;
     case 65363: if(press) turn=1;  else if(turn==1)  turn = 0; break;
     case 'r':   if(press) dmode=-dmode; else af=0; break;
@@ -259,8 +265,8 @@ void handle_key_event(unsigned int key, int press)
     case 'n':   if(press) vrotc=-vrcmax; else vrotc = 0; break;
     case 'm':   if(press) vrotc=vrcmax;  else vrotc = 0; break;
     case 'w':   fwd = 6*press; break;
-    case 'a':   if(!press) left = (left + 1) % 16; break;
-    case 'd':   if(!press) left = (left - 1) % 16; break;
+    case 'a':   turning = press; break;
+    case 'd':   turning = -1*press; break;
 #endif
     default: break;
   }
