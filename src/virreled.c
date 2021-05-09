@@ -57,8 +57,8 @@ if(hr<10){s[0]='0';}
 if(mn<10){s[3]='0';}
 if(sc<10){s[6]='0';}
 }
-
-REALN af=0,bf=0,hbf=0; /*acceleration, brake and handbrake factors*/
+int left = 0;
+REALN af=0,bf=0,hbf=0,fwd=-1; /*acceleration, brake and handbrake factors*/
 int turn, /*-1: left; 0: no turn; 1: right*/
     dmode; /*1 forward, -1 reverse*/
 REALN vrotc,vrcmax,rotc; /*rot. speed and rotation of camera*/
@@ -177,6 +177,8 @@ for(i=1;i<=nob;i++){
   }
 }
 
+if(fwd>-0.125) forward(1,fwd,left);
+
 rdspeed(&car,&speed,&rotspeed,&dspeed);
 acc=dspeed/tframe;
 
@@ -256,6 +258,9 @@ void handle_key_event(unsigned int key, int press)
     case 'c':   if(press) camflag++; if(camflag>3){camflag=1;} rotc=0; vrotc=0; break;
     case 'n':   if(press) vrotc=-vrcmax; else vrotc = 0; break;
     case 'm':   if(press) vrotc=vrcmax;  else vrotc = 0; break;
+    case 'w':   fwd = 6*press; break;
+    case 'a':   if(!press) left = (left + 1) % 16; break;
+    case 'd':   if(!press) left = (left - 1) % 16; break;
 #endif
     default: break;
   }
