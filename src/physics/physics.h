@@ -30,9 +30,9 @@ sintt=sin(tt);costt=cos(tt);
 }
 
 
-/*run 1 simulation step; tstep - time step; af, bf - acceleration and brake factors
+/*run 1 simulation step; tstep - time step
 neartr[][] - near triangles to check for contacts; nnt - number of near triangles*/
-void runsim(sgob *objs,int nob,vhc *car,REALN tstep,REALN af,REALN bf,REALN hbf,triangle **neartr,int nnt)
+void runsim(sgob *objs,int nob,vhc *car,REALN tstep,triangle **neartr,int nnt)
 {int i,j,nobtr; /*nobtr-number of objects in the track*/
 
 REALN pin=0,bkf=0,hbkf=0,
@@ -42,10 +42,10 @@ particle *part;
 
 nobtr=nob-car->nob;
 
-pin=af*car->accel;
+pin=((float)car->cmd_accelerate)*car->accel;
 
-bkf=bf*car->brake;
-hbkf=2.0*hbf*car->brake;
+bkf=((float)car->cmd_brake)*car->brake;
+hbkf=2.0*((float)car->cmd_handbrake)*car->brake;
 
 /*drag*/
 for(i=1;i<=car->nob;i++){
@@ -99,7 +99,7 @@ rmContacts();
 
 
 /*run nsteps simulation steps*/
-void runsteps(sgob *objs,int nob,vhc *car,REALN tstep,int nsteps,REALN vrx,REALN af,REALN bf,REALN hbf)
+void runsteps(sgob *objs,int nob,vhc *car,REALN tstep,int nsteps,REALN vrx)
 {int i,j,nnt=0;
 triangle *neartr[MAXCTR],*trstart,*tr;
 REALN *pos,d,dmin,dx,dy,dz;
@@ -131,7 +131,7 @@ for(i=1;i<=(car->nj);i++){
 } /*rotate joints to steer instead of applying moment*/
 
 for(i=1;i<=nsteps;i++){
-  runsim(objs,nob,car,tstep,af,bf,hbf,neartr,nnt);
+  runsim(objs,nob,car,tstep,neartr,nnt);
 }
 
 for(i=1;i<=(car->nj);i++){

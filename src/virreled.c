@@ -60,11 +60,10 @@ if(sc<10){s[6]='0';}
 int turning = 0;
 int jump = 0;
 int left = 0;
-REALN af=0,bf=0,hbf=0,fwd=-1; /*acceleration, brake and handbrake factors*/
-int turn, /*-1: left; 0: no turn; 1: right*/
-    dmode; /*1 forward, -1 reverse*/
+int fwd=-1;
 REALN vrotc,vrcmax,rotc; /*rot. speed and rotation of camera*/
 int camflag=2; /*number of objects and of object types*/
+vhc* g_vehicle = 0;
 
 int run(const char* pCarFile, const char* pTrackFile)
 {char numefis[MAXWLG],s[10];
@@ -80,6 +79,12 @@ sgob *objs,camera; /*objects*/
 int nob,nto,ntotrk;
 
 vhc car; /*vehicle*/
+car.cmd_turn=0;
+car.cmd_mode=1;
+car.cmd_accelerate = 0;
+car.cmd_brake = 0;
+car.cmd_handbrake = 0;
+g_vehicle = &car;
 
 REALN tframe=0,xan=0,/*tframe-time necessary for display; xan-number of displayed images*/
       timp,dstr; /*total time, distance traveled*/
@@ -121,8 +126,6 @@ window_set_key_handler(handle_key_event);
 vrx=0; arx=0;
 vrxmr=vrxmax=0.36;
 arxmr=arxmax=vrxmax/1.5;
-turn=0;
-dmode=1;
 vrot3=1.57;
 vrcmax=0.79;
 vrotc=0;
@@ -145,7 +148,7 @@ else{
 	arxmr=arxmax/(0.1*speed);
 }
 
-switch(turn){
+switch(car.cmd_turn){
   case 0: if(vrx>0){arx=-arxmr*1.5;}else{if(vrx<0){arx=arxmr*1.5;}else{arx=0;}}
           if(fabs(vrx)<2.25*tframe*arx){arx=0; vrx=0;}
           break;
@@ -169,7 +172,7 @@ speed=0.1/realstep; /*decrease simulation speed if < 10fps*/
 if(nstepsf>(int)speed){nstepsf=(int)speed;}
 
 
-  runsteps(objs,nob,&car,realstep,nstepsf,vrx,af,bf,hbf);
+  runsteps(objs,nob,&car,realstep,nstepsf,vrx);
   timp += tframe;
 
 
@@ -255,12 +258,34 @@ void handle_key_event(unsigned int key, int press)
     case 77: if(press) vrotc=vrcmax;  else vrotc = 0; break;
 #else
     case 65307: quit = 1; break;
-    case 65362: if(press) af=dmode; else af=0; break;
-    case 65364: bf=press; break;
-    case ' ':   jump = press; hbf=press; break;
-    case 65361: if(press) turn=-1; else if(turn==-1) turn = 0; break;
-    case 65363: if(press) turn=1;  else if(turn==1)  turn = 0; break;
-    case 'r':   if(press) dmode=-dmode; else af=0; break;
+    case 65362:
+      if(press) {
+        g_vehicle->cmd_accelerate = g_vehicle->cmd_mode;
+      } else {
+        g_vehicle->cmd_accelerate = 0;
+      }
+      break;
+    case 65364: g_vehicle->cmd_brake = press; break;
+    case ' ':   jump = press; g_vehicle->cmd_handbrake = press; break;
+    case 65361:
+      if(press) {
+        g_vehicle->cmd_turn = -1;
+      } else {
+        if(g_vehicle->cmd_turn==-1) {
+          g_vehicle->cmd_turn = 0;
+        }
+      }
+      break;
+    case 65363:
+      if(press) {
+        g_vehicle->cmd_turn = 1;
+      } else {
+        if(g_vehicle->cmd_turn==1) {
+          g_vehicle->cmd_turn = 0;
+        }
+      }
+      break;
+    case 'r':   if(press) g_vehicle->cmd_mode=-g_vehicle->cmd_mode; else g_vehicle->cmd_accelerate=0; break;
     case 'c':   if(press) camflag++; if(camflag>3){camflag=1;} rotc=0; vrotc=0; break;
     case 'n':   if(press) vrotc=-vrcmax; else vrotc = 0; break;
     case 'm':   if(press) vrotc=vrcmax;  else vrotc = 0; break;

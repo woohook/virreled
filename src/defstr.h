@@ -68,6 +68,13 @@ REALD jax[21][3]; /*joint rotation points*/
 int jfc[21]; /*function of object attached to joint i (see 'ofc' below)*/
 int ofc[21]; /*function of object i: 1-car; 2-trailer; 3-motor wheel; 4-steering wheel;
                     5-motor and steering wheel; 6-passive wheel; 7-trailer wheel*/
+
+int cmd_accelerate;
+int cmd_brake;
+int cmd_handbrake;
+int cmd_turn;
+int cmd_mode;
+
 REALN accel;
 REALN brake; /*acceleration and brake torques/wheel*/
 REALN spring;
