@@ -99,11 +99,34 @@ rmContacts();
 
 
 /*run nsteps simulation steps*/
-void runsteps(sgob *objs,int nob,vhc *car,REALN tstep,int nsteps,REALN vrx)
+void runsteps(sgob *objs,int nob,vhc *car,REALN tstep,int nsteps,REALN tframe)
 {int i,j,nnt=0;
 triangle *neartr[MAXCTR],*trstart,*tr;
 REALN *pos,d,dmin,dx,dy,dz;
 particle *part;
+const REALN vrxmax = 0.36;
+const REALN arxmax = vrxmax / 1.5;
+
+if(car->speed<10){car->vrxmr=vrxmax; car->arxmr=arxmax;}
+else{
+	car->vrxmr=vrxmax/(0.1*car->speed);
+	car->arxmr=arxmax/(0.1*car->speed);
+}
+
+switch(car->cmd_turn){
+  case 0: if(car->vrx>0){car->arx=-car->arxmr*1.5;}else{if(car->vrx<0){car->arx=car->arxmr*1.5;}else{car->arx=0;}}
+          if(fabs(car->vrx)<2.25*tframe*car->arx){car->arx=0; car->vrx=0;}
+          break;
+  case -1: if(car->vrx>-car->vrxmr){car->arx=-car->arxmr; if(car->vrx>0){car->arx*=1.5;}}else{car->arx=0;}
+           break;
+  case 1: if(car->vrx<car->vrxmr){car->arx=car->arxmr; if(car->vrx<0){car->arx*=1.5;}}else{car->arx=0;}
+          break;
+  default: break;
+}
+
+car->vrx+=car->arx*tframe;
+if(car->vrx>car->vrxmr){car->vrx=car->vrxmr;}
+if(car->vrx<-car->vrxmr){car->vrx=-car->vrxmr;}
 
 trstart=DGLOBtrstart;
 pos=DGLOBpart[car->bid[1]].pos;
@@ -126,7 +149,7 @@ while(tr!=0){
 
 for(i=1;i<=(car->nj);i++){
   if(((car->jfc[i])==4)||((car->jfc[i])==5)){
-    rotjoint(car->jid[i],car->jax[i],-1.4*tan(1.7*vrx));
+    rotjoint(car->jid[i],car->jax[i],-1.4*tan(1.7*car->vrx));
   }
 } /*rotate joints to steer instead of applying moment*/
 
@@ -136,7 +159,7 @@ for(i=1;i<=nsteps;i++){
 
 for(i=1;i<=(car->nj);i++){
   if(((car->jfc[i])==4)||((car->jfc[i])==5)){
-    rotjoint(car->jid[i],car->jax[i],1.4*tan(1.7*vrx));
+    rotjoint(car->jid[i],car->jax[i],1.4*tan(1.7*car->vrx));
   }
 }
 

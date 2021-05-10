@@ -84,17 +84,18 @@ car.cmd_mode=1;
 car.cmd_accelerate = 0;
 car.cmd_brake = 0;
 car.cmd_handbrake = 0;
+car.vrx=0; car.arx=0;
+car.vrxmr=0.36;
+car.arxmr=car.vrxmr/1.5;
+car.speed = car.dspeed = car.rotspeed = 0;
 g_vehicle = &car;
 
 REALN tframe=0,xan=0,/*tframe-time necessary for display; xan-number of displayed images*/
       timp,dstr; /*total time, distance traveled*/
 
 /*for game*/
-REALN vrx,vrxmax,vrxmr, /*rot. speed*/
-      arx,arxmax,arxmr, /*rot. acceleration*/
-      vrot3, /*rot. speed of level 3 objects*/
-      realstep, /*real time step (s)*/
-      speed,dspeed,rotspeed,acc;
+REALN vrot3, /*rot. speed of level 3 objects*/
+      realstep; /*real time step (s)*/
 int nstepsf; /*number of simulation steps/frame*/
 /*for game^*/
 
@@ -123,9 +124,6 @@ objs=readvehicle(numefis,objs,&nto,&nob,&car); /*read vehicle from file*/
 window_create(0,0,g_screen_width,g_screen_height);
 window_set_key_handler(handle_key_event);
 
-vrx=0; arx=0;
-vrxmr=vrxmax=0.36;
-arxmr=arxmax=vrxmax/1.5;
 vrot3=1.57;
 vrcmax=0.79;
 vrotc=0;
@@ -142,37 +140,15 @@ while(!quit)
   tframe = time_get_step_duration() / 1000.0;
   xan++;
 
-if(speed<10){vrxmr=vrxmax; arxmr=arxmax;}
-else{
-	vrxmr=vrxmax/(0.1*speed);
-	arxmr=arxmax/(0.1*speed);
-}
-
-switch(car.cmd_turn){
-  case 0: if(vrx>0){arx=-arxmr*1.5;}else{if(vrx<0){arx=arxmr*1.5;}else{arx=0;}}
-          if(fabs(vrx)<2.25*tframe*arx){arx=0; vrx=0;}
-          break;
-  case -1: if(vrx>-vrxmr){arx=-arxmr; if(vrx>0){arx*=1.5;}}else{arx=0;}
-           break;
-  case 1: if(vrx<vrxmr){arx=arxmr; if(vrx<0){arx*=1.5;}}else{arx=0;}
-          break;
-  default: break;
-}
-
-vrx+=arx*tframe;
-if(vrx>vrxmr){vrx=vrxmr;}
-if(vrx<-vrxmr){vrx=-vrxmr;}
-
-
 /*simulation*/
 nstepsf=(int)(tframe/STIMESTEP)+1; /*number of simulation steps/frame*/
 realstep=tframe/nstepsf; /*simulation time step*/
 
-speed=0.1/realstep; /*decrease simulation speed if < 10fps*/
-if(nstepsf>(int)speed){nstepsf=(int)speed;}
+REALN simspeed=0.1/realstep; /*decrease simulation speed if < 10fps*/
+if(nstepsf>(int)simspeed){nstepsf=(int)simspeed;}
 
 
-  runsteps(objs,nob,&car,realstep,nstepsf,vrx);
+  runsteps(objs,nob,&car,realstep,nstepsf,tframe);
   timp += tframe;
 
 
@@ -188,8 +164,7 @@ if(fwd>-0.125)
   forward(1,fwd,left,jump);
 }
 
-rdspeed(&car,&speed,&rotspeed,&dspeed);
-acc=dspeed/tframe;
+rdspeed(&car,&car.speed,&car.rotspeed,&car.dspeed);
 
 tmformat(timp,s);
 //switch(dmode){
@@ -208,7 +183,7 @@ if(rotc){rotatx(&camera,objs[car.oid[1]].vy[0],objs[car.oid[1]].vz[0],rotc);}
 
 odis(objs,nob,backcol,zfog,zmax,&camera,&light); /*display image*/
 
-dstr+=(speed*tframe);
+dstr+=(car.speed*tframe);
 
     window_process_events();
 }

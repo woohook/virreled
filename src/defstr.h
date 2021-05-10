@@ -86,6 +86,10 @@ REALN downforce; /*these are multiplied with (speed^2)*/
 REALN camh;
 REALN caml;
 REALN camd; /*camera position*/
+
+REALN vrx,vrxmr, /*rot. speed*/
+      arx,arxmr, /*rot. acceleration*/
+      speed,dspeed,rotspeed;
 } vhc; /*vehicle*/
 
 
