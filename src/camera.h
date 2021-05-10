@@ -16,6 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+float g_zoom = 1.0;
+
 /*set camera*/
 void setcamg(sgob *camera,vhc *car,int flag)
 {REALN *pos;
@@ -28,7 +30,7 @@ pos=part->pos;
 
 switch(flag){
   case 1: a=0.9;
-          x0=pos[0]+25.0; y0=pos[1]; z0=pos[2]-10.0;
+          x0=pos[0]+25.0*g_zoom; y0=pos[1]; z0=pos[2]-10.0*g_zoom;
           camera->vx[0]=x0; camera->vy[0]=y0; camera->vz[0]=z0;
           camera->vx[1]=x0+cos(a); camera->vy[1]=y0; camera->vz[1]=z0+sin(a);
           camera->vx[2]=x0; camera->vy[2]=y0+1; camera->vz[2]=z0;
@@ -44,7 +46,7 @@ switch(flag){
           translat(camera,h*part->vx[0]+d*part->vx[2]+l*part->vx[1],h*part->vy[0]+d*part->vy[2]+l*part->vy[1],h*part->vz[0]+d*part->vz[2]+l*part->vz[1]);
           break;
 
-  case 3: x0=pos[0]+3.0; y0=pos[1]; z0=pos[2]-11.0;
+  case 3: x0=pos[0]+4.0*g_zoom; y0=pos[1]; z0=pos[2]-11.0*g_zoom;
           camera->vx[0]=x0; camera->vy[0]=y0; camera->vz[0]=z0;
           camera->vx[1]=x0+1; camera->vy[1]=y0; camera->vz[1]=z0;
           camera->vx[2]=x0; camera->vy[2]=y0+1; camera->vz[2]=z0;

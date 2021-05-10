@@ -267,6 +267,8 @@ void handle_key_event(unsigned int key, int press)
     case 'w':   fwd = 6*press; break;
     case 'a':   turning = press; break;
     case 'd':   turning = -1*press; break;
+    case '+':   if(press) g_zoom = g_zoom - 0.1; break;
+    case '-':   if(press) g_zoom = g_zoom + 0.1; break;
 #endif
     default: break;
   }
