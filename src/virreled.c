@@ -241,33 +241,54 @@ window_destroy();
 
 return 0;}
 
+#ifdef _WIN32
+
+#define KEY_ESCAPE 27
+#define KEY_SPACE 32
+#define KEY_ARROW_LEFT 37
+#define KEY_ARROW_UP 38
+#define KEY_ARROW_RIGHT 39
+#define KEY_ARROW_DOWN 40
+#define KEY_C 67
+#define KEY_M 77
+#define KEY_N 78
+#define KEY_R 82
+
+#else
+
+#define KEY_ESCAPE 65307
+#define KEY_SPACE ' '
+#define KEY_ARROW_LEFT 65361
+#define KEY_ARROW_UP 65362
+#define KEY_ARROW_RIGHT 65363
+#define KEY_ARROW_DOWN 65364
+#define KEY_A 'a'
+#define KEY_C 'c'
+#define KEY_D 'd'
+#define KEY_M 'm'
+#define KEY_N 'n'
+#define KEY_R 'r'
+#define KEY_W 'w'
+#define KEY_PLUS '+'
+#define KEY_MINUS '-'
+
+#endif
+
 void handle_key_event(unsigned int key, int press)
 {
   switch(key)
   {
-#ifdef _WIN32
-    case 27: quit = 1; break;
-    case 38: if(press) af=dmode; else af=0; break;
-    case 40: bf=press; break;
-    case 32: hbf=press; break;
-    case 37: if(press) turn=-1; else if(turn==-1) turn = 0; break;
-    case 39: if(press) turn=1;  else if(turn==1)  turn = 0; break;
-    case 82: if(press) dmode=-dmode; else af=0; break;
-    case 67: if(press) camflag++; if(camflag>3){camflag=1;} rotc=0; vrotc=0; break;
-    case 78: if(press) vrotc=-vrcmax; else vrotc = 0; break;
-    case 77: if(press) vrotc=vrcmax;  else vrotc = 0; break;
-#else
-    case 65307: quit = 1; break;
-    case 65362:
+    case KEY_ESCAPE: quit = 1; break;
+    case KEY_ARROW_UP:
       if(press) {
         g_vehicle->cmd_accelerate = g_vehicle->cmd_mode;
       } else {
         g_vehicle->cmd_accelerate = 0;
       }
       break;
-    case 65364: g_vehicle->cmd_brake = press; break;
-    case ' ':   jump = press; g_vehicle->cmd_handbrake = press; break;
-    case 65361:
+    case KEY_ARROW_DOWN: g_vehicle->cmd_brake = press; break;
+    case KEY_SPACE:   jump = press; g_vehicle->cmd_handbrake = press; break;
+    case KEY_ARROW_LEFT:
       if(press) {
         g_vehicle->cmd_turn = -1;
       } else {
@@ -276,7 +297,7 @@ void handle_key_event(unsigned int key, int press)
         }
       }
       break;
-    case 65363:
+    case KEY_ARROW_RIGHT:
       if(press) {
         g_vehicle->cmd_turn = 1;
       } else {
@@ -285,16 +306,15 @@ void handle_key_event(unsigned int key, int press)
         }
       }
       break;
-    case 'r':   if(press) g_vehicle->cmd_mode=-g_vehicle->cmd_mode; else g_vehicle->cmd_accelerate=0; break;
-    case 'c':   if(press) camflag++; if(camflag>3){camflag=1;} rotc=0; vrotc=0; break;
-    case 'n':   if(press) vrotc=-vrcmax; else vrotc = 0; break;
-    case 'm':   if(press) vrotc=vrcmax;  else vrotc = 0; break;
-    case 'w':   fwd = 6*press; break;
-    case 'a':   turning = press; break;
-    case 'd':   turning = -1*press; break;
-    case '+':   if(press) g_zoom = g_zoom - 0.1; break;
-    case '-':   if(press) g_zoom = g_zoom + 0.1; break;
-#endif
+    case KEY_R: if(press) g_vehicle->cmd_mode=-g_vehicle->cmd_mode; else g_vehicle->cmd_accelerate=0; break;
+    case KEY_C: if(press) camflag++; if(camflag>3){camflag=1;} rotc=0; vrotc=0; break;
+    case KEY_N: if(press) vrotc=-vrcmax; else vrotc = 0; break;
+    case KEY_M: if(press) vrotc=vrcmax;  else vrotc = 0; break;
+    case KEY_W: fwd = 6*press; break;
+    case KEY_A: turning = press; break;
+    case KEY_D: turning = -1*press; break;
+    case KEY_PLUS: if(press) g_zoom = g_zoom - 0.1; break;
+    case KEY_MINUS: if(press) g_zoom = g_zoom + 0.1; break;
     default: break;
   }
 }
