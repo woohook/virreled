@@ -42,6 +42,10 @@ unsigned int g_screen_height = 600;
 #include "trans.h"
 #include "camera.h"
 #include "readfile.h"
+
+vhc g_vehicles[2];
+int g_vehicles_count = 0;
+
 #include "physics/physics.h"
 
 void handle_key_event(unsigned int,int);
@@ -88,7 +92,10 @@ car.vrx=0; car.arx=0;
 car.vrxmr=0.36;
 car.arxmr=car.vrxmr/1.5;
 car.speed = car.dspeed = car.rotspeed = 0;
-g_vehicle = &car;
+
+g_vehicles[g_vehicles_count++] = car;
+g_vehicles[g_vehicles_count++] = car;
+g_vehicle = &g_vehicles[0];
 
 REALN tframe=0,xan=0,/*tframe-time necessary for display; xan-number of displayed images*/
       timp,dstr; /*total time, distance traveled*/
@@ -119,7 +126,10 @@ ntotrk=nto;
 if(ntotrk==4){zfog=240; zmax=360;}else{zfog=80; zmax=120;}
 
 strcpy(numefis,pCarFile);
-objs=readvehicle(numefis,objs,&nto,&nob,&car); /*read vehicle from file*/
+objs=readvehicle(numefis,objs,&nto,&nob,&g_vehicles[0]); /*read vehicle from file*/
+
+objs=readvehicle("cars/car1",objs,&nto,&nob,&g_vehicles[1]); /*read vehicle from file*/
+setPartPos(g_vehicles[1].bid[1],0,-2,14);  // move next to car
 
 window_create(0,0,g_screen_width,g_screen_height);
 window_set_key_handler(handle_key_event);
@@ -132,7 +142,7 @@ rotc=0;
 timp=0,dstr=0; /*pornit cronometru*/
 tframe=0.5; /*assuming 2 frames/second*/
 
-setcamg(&camera,&car,camflag);
+setcamg(&camera,g_vehicle,camflag);
 
 while(!quit)
 {
@@ -148,7 +158,7 @@ REALN simspeed=0.1/realstep; /*decrease simulation speed if < 10fps*/
 if(nstepsf>(int)simspeed){nstepsf=(int)simspeed;}
 
 
-  runsteps(objs,nob,&car,realstep,nstepsf,tframe);
+  runsteps(objs,nob,&g_vehicles[0],realstep,nstepsf,tframe);
   timp += tframe;
 
 
@@ -161,10 +171,10 @@ for(i=1;i<=nob;i++){
 if(fwd>-0.125)
 {
   left = (left + turning) % 256;
-  forward(1,fwd,left,jump);
+  forward(g_vehicles[1].bid[1],fwd,left,jump);
 }
 
-rdspeed(&car,&car.speed,&car.rotspeed,&car.dspeed);
+rdspeed(g_vehicle,&g_vehicle->speed,&g_vehicle->rotspeed,&g_vehicle->dspeed);
 
 tmformat(timp,s);
 //switch(dmode){
@@ -176,14 +186,14 @@ tmformat(timp,s);
 //}
 
 
-setcamg(&camera,&car,camflag);
+setcamg(&camera,g_vehicle,camflag);
 
 rotc+=vrotc*tframe; if(camflag==2){rotc=0; vrotc=0;}
-if(rotc){rotatx(&camera,objs[car.oid[1]].vy[0],objs[car.oid[1]].vz[0],rotc);}
+if(rotc){rotatx(&camera,objs[g_vehicles[0].oid[1]].vy[0],objs[g_vehicles[0].oid[1]].vz[0],rotc);}
 
 odis(objs,nob,backcol,zfog,zmax,&camera,&light); /*display image*/
 
-dstr+=(car.speed*tframe);
+dstr+=(g_vehicle->speed*tframe);
 
     window_process_events();
 }

@@ -235,21 +235,17 @@ part->vz[2]=1.0;
 
 }
 
-forward(int i, REALD speed, int turn, int jump)
+void forward(int i, REALD speed, int turn, int jump)
 {
  particle *part;
  part=&DGLOBpart[i];
 
-// part->pos[0]=x;
-// part->pos[1]=y;
-// part->pos[2]=z;
 if(jump > 0 && part->tras[0] > -0.0125F && part->tras[0] < 0.0125F)
 {
   part->tras[0] = 8.F;
 }
-//part->tras[1]=
+
 part->tras[2]=0;
-// part->rots[0]=
 part->rots[1]=part->rots[2]=0;
  part->traac[0]=part->traac[1]=part->traac[2]=0;
  part->rotac[0]=part->rotac[1]=part->rotac[2]=0;
@@ -265,7 +261,6 @@ part->vx[2]=0.0;
 part->vy[2]=-sin(angle);
 part->vz[2]=cos(angle);
 
-// part->tras[0]=x;
 part->tras[1]=-sin(angle)*speed;
 part->tras[2]=cos(angle)*speed;
 }

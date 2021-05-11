@@ -128,8 +128,10 @@ car->vrx+=car->arx*tframe;
 if(car->vrx>car->vrxmr){car->vrx=car->vrxmr;}
 if(car->vrx<-car->vrxmr){car->vrx=-car->vrxmr;}
 
+for(int k=0; k<g_vehicles_count; ++k)
+{
 trstart=DGLOBtrstart;
-pos=DGLOBpart[car->bid[1]].pos;
+pos=DGLOBpart[g_vehicles[k].bid[1]].pos;
 
 tr=trstart->next;
 while(tr!=0){
@@ -145,6 +147,7 @@ while(tr!=0){
     neartr[nnt]=tr;
   }
   tr=tr->next;
+}
 }
 
 for(i=1;i<=(car->nj);i++){
@@ -163,9 +166,11 @@ for(i=1;i<=(car->nj);i++){
   }
 }
 
-for(i=1;i<=car->nob;i++){
-  j=car->oid[i];
-  part=&DGLOBpart[car->bid[i]];
+for(int k=0;k<g_vehicles_count;++k)
+{
+for(i=1;i<=g_vehicles[k].nob;i++){
+  j=g_vehicles[k].oid[i];
+  part=&DGLOBpart[g_vehicles[k].bid[i]];
 
   objs[j].vx[0]=objs[j].xcen=part->pos[0];
   objs[j].vy[0]=objs[j].ycen=part->pos[1];
@@ -183,6 +188,7 @@ for(i=1;i<=car->nob;i++){
   objs[j].vy[3]=objs[j].vy[0]+part->vy[2];
   objs[j].vz[3]=objs[j].vz[0]+part->vz[2];
 } /*calculated object positions for rendering*/
+}
 
 }
 
