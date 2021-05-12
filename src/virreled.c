@@ -73,8 +73,11 @@ int last_command_reverse = 0;
 int last_command_turn_left = 0;
 int last_command_turn_right = 0;
 
-void vehicle_process_input()
+void vehicle_process_input(float tframe)
 {
+  const REALN vrxmax = 0.36;
+  const REALN arxmax = vrxmax / 1.5;
+
   if(g_command_throttle) {
     g_vehicle->cmd_accelerate = g_vehicle->cmd_mode;
   } else {
@@ -112,6 +115,27 @@ void vehicle_process_input()
     g_vehicle->cmd_accelerate=0;
   }
   last_command_reverse = g_command_reverse;
+
+  if(g_vehicle->speed<10){g_vehicle->vrxmr=vrxmax; g_vehicle->arxmr=arxmax;}
+  else{
+	g_vehicle->vrxmr=vrxmax/(0.1*g_vehicle->speed);
+	g_vehicle->arxmr=arxmax/(0.1*g_vehicle->speed);
+  }
+
+  switch(g_vehicle->cmd_turn){
+    case 0: if(g_vehicle->vrx>0){g_vehicle->arx=-g_vehicle->arxmr*1.5;}else{if(g_vehicle->vrx<0){g_vehicle->arx=g_vehicle->arxmr*1.5;}else{g_vehicle->arx=0;}}
+            if(fabs(g_vehicle->vrx)<2.25*tframe*g_vehicle->arx){g_vehicle->arx=0; g_vehicle->vrx=0;}
+            break;
+    case -1: if(g_vehicle->vrx>-g_vehicle->vrxmr){g_vehicle->arx=-g_vehicle->arxmr; if(g_vehicle->vrx>0){g_vehicle->arx*=1.5;}}else{g_vehicle->arx=0;}
+             break;
+    case 1: if(g_vehicle->vrx<g_vehicle->vrxmr){g_vehicle->arx=g_vehicle->arxmr; if(g_vehicle->vrx<0){g_vehicle->arx*=1.5;}}else{g_vehicle->arx=0;}
+            break;
+    default: break;
+  }
+
+  g_vehicle->vrx+=g_vehicle->arx*tframe;
+  if(g_vehicle->vrx>g_vehicle->vrxmr){g_vehicle->vrx=g_vehicle->vrxmr;}
+  if(g_vehicle->vrx<-g_vehicle->vrxmr){g_vehicle->vrx=-g_vehicle->vrxmr;}
 }
 
 int last_command_camera_switch_mode = 0;
@@ -223,9 +247,9 @@ realstep=tframe/nstepsf; /*simulation time step*/
 REALN simspeed=0.1/realstep; /*decrease simulation speed if < 10fps*/
 if(nstepsf>(int)simspeed){nstepsf=(int)simspeed;}
 
-  vehicle_process_input();
+  vehicle_process_input(tframe);
 
-  runsteps(objs,&g_vehicles[0],realstep,nstepsf,tframe);
+  runsteps(objs,&g_vehicles[0],realstep,nstepsf);
   timp += tframe;
 
 
