@@ -1,0 +1,10 @@
+#define KEY_ESCAPE 27
+#define KEY_SPACE 32
+#define KEY_ARROW_LEFT 37
+#define KEY_ARROW_UP 38
+#define KEY_ARROW_RIGHT 39
+#define KEY_ARROW_DOWN 40
+#define KEY_C 67
+#define KEY_M 77
+#define KEY_N 78
+#define KEY_R 82

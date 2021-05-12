@@ -21,9 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <math.h>
 #include <string.h>
 
-int quit = 0;
-
 #include "time/time.h"
+#include "input/input.h"
 #include "display/display.h"
 
 #include "physics/dconfig.h"
@@ -61,6 +60,7 @@ if(hr<10){s[0]='0';}
 if(mn<10){s[3]='0';}
 if(sc<10){s[6]='0';}
 }
+
 int turning = 0;
 int jump = 0;
 int left = 0;
@@ -68,6 +68,72 @@ int fwd=-1;
 REALN vrotc,vrcmax,rotc; /*rot. speed and rotation of camera*/
 int camflag=2; /*number of objects and of object types*/
 vhc* g_vehicle = 0;
+
+int last_command_reverse = 0;
+int last_command_camera_switch_mode = 0;
+int last_command_turn_left = 0;
+int last_command_turn_right = 0;
+int last_command_camera_rotate_left = 0;
+int last_command_camera_rotate_right = 0;
+void vehicle_process_input()
+{
+  if(g_command_throttle) {
+    g_vehicle->cmd_accelerate = g_vehicle->cmd_mode;
+  } else {
+    g_vehicle->cmd_accelerate = 0;
+  }
+
+  g_vehicle->cmd_brake = g_command_brake;
+
+  g_vehicle->cmd_handbrake = g_command_handbrake;
+
+  if(g_command_turn_left) {
+    g_vehicle->cmd_turn = -1;
+  }
+  if(last_command_turn_left==1 && g_command_turn_left==0) {
+    if(g_vehicle->cmd_turn==-1) {
+      g_vehicle->cmd_turn = 0;
+    }
+  }
+  last_command_turn_left = g_command_turn_left;
+
+  if(g_command_turn_right) {
+    g_vehicle->cmd_turn = 1;
+  }
+  if(last_command_turn_right==1 && g_command_turn_right==0) {
+    if(g_vehicle->cmd_turn==1) {
+      g_vehicle->cmd_turn = 0;
+    }
+  }
+  last_command_turn_right = g_command_turn_right;
+
+  if(last_command_reverse==0 && g_command_reverse==1) {
+    g_vehicle->cmd_mode=-g_vehicle->cmd_mode;
+  }
+  if(last_command_reverse==1 && g_command_reverse==0) {
+    g_vehicle->cmd_accelerate=0;
+  }
+  last_command_reverse = g_command_reverse;
+
+  if(last_command_camera_switch_mode==0 && g_command_camera_switch_mode==1) {
+    camflag++; if(camflag>3){camflag=1;} rotc=0; vrotc=0;
+  }
+  last_command_camera_switch_mode = g_command_camera_switch_mode;
+
+  if(g_command_camera_rotate_left) vrotc=-vrcmax;
+  if(last_command_camera_rotate_left==1 && g_command_camera_rotate_left==0) vrotc = 0;
+  last_command_camera_rotate_left = g_command_camera_rotate_left;
+
+  if(g_command_camera_rotate_right) vrotc=vrcmax;
+  if(last_command_camera_rotate_right==1 && g_command_camera_rotate_right==0) vrotc = 0;
+  last_command_camera_rotate_right = g_command_camera_rotate_right;
+
+//    case KEY_W: fwd = 6*press; break;
+//    case KEY_A: turning = press; break;
+//    case KEY_D: turning = -1*press; break;
+  if(g_command_camera_zoom_in) g_zoom = g_zoom - 0.1;
+  if(g_command_camera_zoom_out) g_zoom = g_zoom + 0.1;
+}
 
 int run(const char* pCarFile, const char* pTrackFile)
 {char numefis[MAXWLG],s[10];
@@ -143,7 +209,7 @@ tframe=0.5; /*assuming 2 frames/second*/
 
 setcamg(&camera,g_vehicle,camflag);
 
-while(!quit)
+while(!g_command_quit)
 {
   time_process_frame();
   tframe = time_get_step_duration() / 1000.0;
@@ -156,6 +222,7 @@ realstep=tframe/nstepsf; /*simulation time step*/
 REALN simspeed=0.1/realstep; /*decrease simulation speed if < 10fps*/
 if(nstepsf>(int)simspeed){nstepsf=(int)simspeed;}
 
+  vehicle_process_input();
 
   runsteps(objs,&g_vehicles[0],realstep,nstepsf,tframe);
   timp += tframe;
@@ -225,83 +292,6 @@ window_destroy();
 
 return 0;}
 
-#ifdef _WIN32
-
-#define KEY_ESCAPE 27
-#define KEY_SPACE 32
-#define KEY_ARROW_LEFT 37
-#define KEY_ARROW_UP 38
-#define KEY_ARROW_RIGHT 39
-#define KEY_ARROW_DOWN 40
-#define KEY_C 67
-#define KEY_M 77
-#define KEY_N 78
-#define KEY_R 82
-
-#else
-
-#define KEY_ESCAPE 65307
-#define KEY_SPACE ' '
-#define KEY_ARROW_LEFT 65361
-#define KEY_ARROW_UP 65362
-#define KEY_ARROW_RIGHT 65363
-#define KEY_ARROW_DOWN 65364
-#define KEY_A 'a'
-#define KEY_C 'c'
-#define KEY_D 'd'
-#define KEY_M 'm'
-#define KEY_N 'n'
-#define KEY_R 'r'
-#define KEY_W 'w'
-#define KEY_PLUS '+'
-#define KEY_MINUS '-'
-
-#endif
-
-void handle_key_event(unsigned int key, int press)
-{
-  switch(key)
-  {
-    case KEY_ESCAPE: quit = 1; break;
-    case KEY_ARROW_UP:
-      if(press) {
-        g_vehicle->cmd_accelerate = g_vehicle->cmd_mode;
-      } else {
-        g_vehicle->cmd_accelerate = 0;
-      }
-      break;
-    case KEY_ARROW_DOWN: g_vehicle->cmd_brake = press; break;
-    case KEY_SPACE:   jump = press; g_vehicle->cmd_handbrake = press; break;
-    case KEY_ARROW_LEFT:
-      if(press) {
-        g_vehicle->cmd_turn = -1;
-      } else {
-        if(g_vehicle->cmd_turn==-1) {
-          g_vehicle->cmd_turn = 0;
-        }
-      }
-      break;
-    case KEY_ARROW_RIGHT:
-      if(press) {
-        g_vehicle->cmd_turn = 1;
-      } else {
-        if(g_vehicle->cmd_turn==1) {
-          g_vehicle->cmd_turn = 0;
-        }
-      }
-      break;
-    case KEY_R: if(press) g_vehicle->cmd_mode=-g_vehicle->cmd_mode; else g_vehicle->cmd_accelerate=0; break;
-    case KEY_C: if(press) camflag++; if(camflag>3){camflag=1;} rotc=0; vrotc=0; break;
-    case KEY_N: if(press) vrotc=-vrcmax; else vrotc = 0; break;
-    case KEY_M: if(press) vrotc=vrcmax;  else vrotc = 0; break;
-    case KEY_W: fwd = 6*press; break;
-    case KEY_A: turning = press; break;
-    case KEY_D: turning = -1*press; break;
-    case KEY_PLUS: if(press) g_zoom = g_zoom - 0.1; break;
-    case KEY_MINUS: if(press) g_zoom = g_zoom + 0.1; break;
-    default: break;
-  }
-}
 
 #ifdef _WIN32
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
