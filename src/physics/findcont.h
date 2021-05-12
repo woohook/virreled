@@ -119,11 +119,10 @@ for(i=0;i<=2;i++){ /*apply moments and forces*/
 
 
 void solveAllJoint()
-{int nrpart;
+{
 joint *jtstart,*jt;
 particle *part;
 
-nrpart=DGLOBnrpart;
 part=DGLOBpart;
 jtstart=DGLOBjtstart;
 
@@ -251,15 +250,13 @@ for(i=1;i<=nrpart;i++){
 
 /*solve contact with fixed point
 acv[], ac - same as in addContTr()*/
-void solveForceCt(particle *part,REALD x,REALD y,REALD z,REALD *acv,REALD ac)
+void solveForceCt(particle *part,REALD *acv,REALD ac)
 {int j;
-REALD x0,y0,z0, /*centre of particle*/
-      r1,k1,frep,ff,
+REALD r1,k1,frep,ff,
       vl1[3],vl2[3],vlr,
       vln1[3], /*normal component of speed of part. 1 in point of contact*/
       f1[3],m1[3]; /*same as in addCont()*/
 
-x0=part->pos[0]; y0=part->pos[1]; z0=part->pos[2];
 r1=part->radius;
 
 k1=part->k;
@@ -345,7 +342,7 @@ a2=a*a; b2=b*b; c2=c*c; abc2=a2+b2+c2;
 
   if(ac<=r1){
   if(((x>p1[0])&&(x<p2[0]))||((y>p1[1])&&(y<p2[1]))||((z>p1[2])&&(z<p2[2]))){
-    solveForceCt(part,x,y,z,acv,ac);
+    solveForceCt(part,acv,ac);
   }}
 
 }
@@ -380,7 +377,7 @@ for(i=1;i<=nrpart;i++){
 
   if(ac<=r1){ /*if distance is lower than particle radius*/
   if(checkTr(tr,a,b,c,x,y,z)){ /*if point of contact is inside triangle*/
-    solveForceCt(&part[i],x,y,z,acv,ac);
+    solveForceCt(&part[i],acv,ac);
   }else{
     solveContLn(&part[i],tr->p1,tr->p2);
     solveContLn(&part[i],tr->p2,tr->p3);

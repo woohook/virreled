@@ -72,8 +72,7 @@ vhc* g_vehicle = 0;
 int run(const char* pCarFile, const char* pTrackFile)
 {char numefis[MAXWLG],s[10];
 
-int i,
-    t0frame; /*t0frame - moment when image starts to be displayed*/
+int i;
 
 pixcol backcol; /*culoarea fundalului*/
 REALN  zfog,zmax; /*zfog,zmax - distanta de la care incepe ceatza, respectiv de la care nu se mai vede nimic*/
@@ -158,7 +157,7 @@ REALN simspeed=0.1/realstep; /*decrease simulation speed if < 10fps*/
 if(nstepsf>(int)simspeed){nstepsf=(int)simspeed;}
 
 
-  runsteps(objs,nob,&g_vehicles[0],realstep,nstepsf,tframe);
+  runsteps(objs,&g_vehicles[0],realstep,nstepsf,tframe);
   timp += tframe;
 
 

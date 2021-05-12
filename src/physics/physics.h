@@ -32,15 +32,14 @@ sintt=sin(tt);costt=cos(tt);
 
 /*run 1 simulation step; tstep - time step
 neartr[][] - near triangles to check for contacts; nnt - number of near triangles*/
-void runsim(sgob *objs,int nob,vhc *car,REALN tstep,triangle **neartr,int nnt)
-{int i,j,nobtr; /*nobtr-number of objects in the track*/
+void runsim(vhc *car,REALN tstep,triangle **neartr,int nnt)
+{
+  int i,j;
 
 REALN pin=0,bkf=0,hbkf=0,
       mass,drc,
       *vel,vloc[3],aloc[3];
 particle *part;
-
-nobtr=nob-car->nob;
 
 pin=((float)car->cmd_accelerate)*car->accel;
 
@@ -99,7 +98,7 @@ rmContacts();
 
 
 /*run nsteps simulation steps*/
-void runsteps(sgob *objs,int nob,vhc *car,REALN tstep,int nsteps,REALN tframe)
+void runsteps(sgob *objs,vhc *car,REALN tstep,int nsteps,REALN tframe)
 {int i,j,nnt=0;
 triangle *neartr[MAXCTR],*trstart,*tr;
 REALN *pos,d,dmin,dx,dy,dz;
@@ -157,7 +156,7 @@ for(i=1;i<=(car->nj);i++){
 } /*rotate joints to steer instead of applying moment*/
 
 for(i=1;i<=nsteps;i++){
-  runsim(objs,nob,car,tstep,neartr,nnt);
+  runsim(car,tstep,neartr,nnt);
 }
 
 for(i=1;i<=(car->nj);i++){

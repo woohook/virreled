@@ -56,7 +56,7 @@ unsigned char* pixels = 0;
 /*functie care elimina triunghiurile care sunt in plus*/
 int fclip(tria *face,int nrfaces,REALN zmin,tria *facedisp,REALN zmax,REALN tgh,REALN tgv)
 {int i,j,k,l,kmin,invs;
-REALN x[4],y[4],z[4],tmp,tmp2,min;
+REALN x[4],y[4],z[4],tmp,tmp2;
 j=0; /*variabila pt. numarat triunghiurile afisate*/
 for(i=1;i<=nrfaces;i++){
 
@@ -75,7 +75,7 @@ for(i=1;i<=nrfaces;i++){
 
     invs=1;
 
-    for(k=1;k<=2;k++){min=z[k];kmin=k;
+    for(k=1;k<=2;k++){kmin=k;
       for(l=k+1;l<=3;l++){
 	if(z[l]<z[kmin]){kmin=l;}
       }if(kmin!=k){ invs*=-1;
