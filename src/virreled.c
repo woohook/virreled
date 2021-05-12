@@ -70,11 +70,9 @@ int camflag=2; /*number of objects and of object types*/
 vhc* g_vehicle = 0;
 
 int last_command_reverse = 0;
-int last_command_camera_switch_mode = 0;
 int last_command_turn_left = 0;
 int last_command_turn_right = 0;
-int last_command_camera_rotate_left = 0;
-int last_command_camera_rotate_right = 0;
+
 void vehicle_process_input()
 {
   if(g_command_throttle) {
@@ -114,7 +112,13 @@ void vehicle_process_input()
     g_vehicle->cmd_accelerate=0;
   }
   last_command_reverse = g_command_reverse;
+}
 
+int last_command_camera_switch_mode = 0;
+int last_command_camera_rotate_left = 0;
+int last_command_camera_rotate_right = 0;
+void camera_process_input()
+{
   if(last_command_camera_switch_mode==0 && g_command_camera_switch_mode==1) {
     camflag++; if(camflag>3){camflag=1;} rotc=0; vrotc=0;
   }
@@ -128,9 +132,6 @@ void vehicle_process_input()
   if(last_command_camera_rotate_right==1 && g_command_camera_rotate_right==0) vrotc = 0;
   last_command_camera_rotate_right = g_command_camera_rotate_right;
 
-//    case KEY_W: fwd = 6*press; break;
-//    case KEY_A: turning = press; break;
-//    case KEY_D: turning = -1*press; break;
   if(g_command_camera_zoom_in) g_zoom = g_zoom - 0.1;
   if(g_command_camera_zoom_out) g_zoom = g_zoom + 0.1;
 }
@@ -252,6 +253,7 @@ tmformat(timp,s);
 //}
 
 
+camera_process_input();
 setcamg(&camera,g_vehicle,camflag);
 
 rotc+=vrotc*tframe; if(camflag==2){rotc=0; vrotc=0;}
