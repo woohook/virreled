@@ -72,11 +72,17 @@ vhc* g_vehicle = 0;
 int last_command_reverse = 0;
 int last_command_turn_left = 0;
 int last_command_turn_right = 0;
+int last_command_vehicle_switch = 0;
 
 void vehicle_process_input(float tframe)
 {
   const REALN vrxmax = 0.36;
   const REALN arxmax = vrxmax / 1.5;
+
+  if(last_command_vehicle_switch==0 && g_command_vehicle_switch==1) {
+    g_vehicle = &g_vehicles[(g_vehicle==&g_vehicles[0]) ? 1 : 0];
+  }
+  last_command_vehicle_switch = g_command_vehicle_switch;
 
   if(g_command_throttle) {
     g_vehicle->cmd_accelerate = g_vehicle->cmd_mode;
@@ -218,8 +224,8 @@ if(ntotrk==4){zfog=240; zmax=360;}else{zfog=80; zmax=120;}
 strcpy(numefis,pCarFile);
 objs=readvehicle(numefis,objs,&nto,&nob,&g_vehicles[0]); /*read vehicle from file*/
 
-objs=readvehicle("cars/car1",objs,&nto,&nob,&g_vehicles[1]); /*read vehicle from file*/
-setPartPos(g_vehicles[1].bid[1],0,-2,14);  // move next to car
+objs=readvehicle("cars/car3",objs,&nto,&nob,&g_vehicles[1]); /*read vehicle from file*/
+setPartPos(g_vehicles[1].bid[1],2,0,24);  // move next to car
 
 window_create(0,0,g_screen_width,g_screen_height);
 window_set_key_handler(handle_key_event);
@@ -249,7 +255,7 @@ if(nstepsf>(int)simspeed){nstepsf=(int)simspeed;}
 
   vehicle_process_input(tframe);
 
-  runsteps(objs,&g_vehicles[0],realstep,nstepsf);
+  runsteps(objs,realstep,nstepsf);
   timp += tframe;
 
 

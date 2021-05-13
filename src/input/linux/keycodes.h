@@ -7,6 +7,7 @@
 #define KEY_A 'a'
 #define KEY_C 'c'
 #define KEY_D 'd'
+#define KEY_F 'f'
 #define KEY_M 'm'
 #define KEY_N 'n'
 #define KEY_R 'r'

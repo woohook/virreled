@@ -32,7 +32,7 @@ sintt=sin(tt);costt=cos(tt);
 
 /*run 1 simulation step; tstep - time step
 neartr[][] - near triangles to check for contacts; nnt - number of near triangles*/
-void runsim(vhc *car,REALN tstep,triangle **neartr,int nnt)
+void runsim(REALN tstep,triangle **neartr,int nnt)
 {
   int i,j;
 
@@ -41,6 +41,8 @@ REALN pin=0,bkf=0,hbkf=0,
       *vel,vloc[3],aloc[3];
 particle *part;
 
+for(vhc* car = &g_vehicles[0]; car < &g_vehicles[g_vehicles_count]; ++car)
+{
 pin=((float)car->cmd_accelerate)*car->accel;
 
 bkf=((float)car->cmd_brake)*car->brake;
@@ -83,6 +85,8 @@ for(i=1;i<=(car->nj);i++){
   }
 }
 
+}
+
 for(i=1;i<=nnt;i++){solveContTr(neartr[i]);}
 
 /*solveAllContPart();*/
@@ -98,7 +102,7 @@ rmContacts();
 
 
 /*run nsteps simulation steps*/
-void runsteps(sgob *objs,vhc *car,REALN tstep,int nsteps)
+void runsteps(sgob *objs,REALN tstep,int nsteps)
 {int i,j,nnt=0;
 triangle *neartr[MAXCTR],*trstart,*tr;
 REALN *pos,d,dmin,dx,dy,dz;
@@ -106,8 +110,9 @@ particle *part;
 
 for(int k=0; k<g_vehicles_count; ++k)
 {
+vhc* car = &g_vehicles[k];
 trstart=DGLOBtrstart;
-pos=DGLOBpart[g_vehicles[k].bid[1]].pos;
+pos=DGLOBpart[car->bid[1]].pos;
 
 tr=trstart->next;
 while(tr!=0){
@@ -124,26 +129,27 @@ while(tr!=0){
   }
   tr=tr->next;
 }
-}
 
 for(i=1;i<=(car->nj);i++){
   if(((car->jfc[i])==4)||((car->jfc[i])==5)){
     rotjoint(car->jid[i],car->jax[i],-1.4*tan(1.7*car->vrx));
   }
 } /*rotate joints to steer instead of applying moment*/
-
-for(i=1;i<=nsteps;i++){
-  runsim(car,tstep,neartr,nnt);
 }
 
+for(i=1;i<=nsteps;i++){
+  runsim(tstep,neartr,nnt);
+}
+
+for(int k=0; k<g_vehicles_count; ++k)
+{
+vhc* car = &g_vehicles[k];
 for(i=1;i<=(car->nj);i++){
   if(((car->jfc[i])==4)||((car->jfc[i])==5)){
     rotjoint(car->jid[i],car->jax[i],1.4*tan(1.7*car->vrx));
   }
 }
 
-for(int k=0;k<g_vehicles_count;++k)
-{
 for(i=1;i<=g_vehicles[k].nob;i++){
   j=g_vehicles[k].oid[i];
   part=&DGLOBpart[g_vehicles[k].bid[i]];

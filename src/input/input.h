@@ -9,6 +9,7 @@ int g_command_brake = 0;
 int g_command_handbrake = 0;
 int g_command_turn_left = 0;
 int g_command_turn_right = 0;
+int g_command_vehicle_switch = 0;
 
 int g_command_quit = 0;
 
@@ -34,6 +35,7 @@ void handle_key_event(unsigned int key, int press)
     case KEY_C: g_command_camera_switch_mode = press; break;
     case KEY_N: g_command_camera_rotate_left = press; break;
     case KEY_M: g_command_camera_rotate_right = press; break;
+    case KEY_F: g_command_vehicle_switch = press; break;
     case KEY_PLUS: g_command_camera_zoom_in = press; break;
     case KEY_MINUS: g_command_camera_zoom_out = press; break;
     default: break;
