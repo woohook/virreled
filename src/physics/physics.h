@@ -90,6 +90,24 @@ for(i=1;i<=(car->nj);i++){
 for(i=1;i<=nnt;i++){solveContTr(neartr[i]);}
 
 /*solveAllContPart();*/
+for(vhc* car = &g_vehicles[0]; car < &g_vehicles[g_vehicles_count]; ++car)
+{
+  for(vhc* car2 = &g_vehicles[1]; car2 < &g_vehicles[g_vehicles_count]; ++car2)
+  {
+    if(car == car2)
+    {
+      continue;
+    }
+
+    for(int i = 1; i <= car->nob; ++i)
+    {
+      for(int j = 1; j <= car2->nob; ++j)
+      {
+        solveContPart(car->bid[i], car2->bid[j]);
+      }
+    }
+  }
+}
 
 solveAllJoint();
 
