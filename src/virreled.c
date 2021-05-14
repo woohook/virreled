@@ -217,11 +217,11 @@ objs=readtrack(numefis,&nob,&nto,&backcol,&light); /*read objects from file*/
 ntotrk=nto;
 if(ntotrk==4){zfog=240; zmax=360;}else{zfog=80; zmax=120;}
 
-strcpy(numefis,pCarFile);
-objs=readvehicle(numefis,objs,&nto,&nob,&g_vehicles[0]); /*read vehicle from file*/
+objs=readvehicle("cars/car1",objs,&nto,&nob,&g_vehicles[0]); /*read vehicle from file*/
+setPartPos(g_vehicles[0].bid[1],1,-2,14);  // move next to car
 
-objs=readvehicle("cars/car1",objs,&nto,&nob,&g_vehicles[1]); /*read vehicle from file*/
-setPartPos(g_vehicles[1].bid[1],1,-2,14);  // move next to car
+strcpy(numefis,pCarFile);
+objs=readvehicle(numefis,objs,&nto,&nob,&g_vehicles[1]); /*read vehicle from file*/
 
 window_create(0,0,g_screen_width,g_screen_height);
 window_set_key_handler(handle_key_event);
