@@ -31,29 +31,21 @@ sintt=sin(tt);costt=cos(tt);
 
 void physics_vehicle_preprocess(vhc* car)
 {
+  for(int i=1;i<=(car->nj);i++){
+    if(((car->jfc[i])==4)||((car->jfc[i])==5)){
+      rotjoint(car->jid[i],car->jax[i],-1.4*tan(1.7*car->vrx));
+    }
+  } /*rotate joints to steer instead of applying moment*/
 }
 
 void physics_vehicle_process(vhc* car)
 {
-}
+  int i, j;
+  REALN pin=0,bkf=0,hbkf=0,
+        mass,drc,
+        *vel,vloc[3],aloc[3];
+  particle *part;
 
-void physics_vehicle_postprocess(vhc* car)
-{
-}
-
-/*run 1 simulation step; tstep - time step
-neartr[][] - near triangles to check for contacts; nnt - number of near triangles*/
-void runsim(REALN tstep,triangle **neartr,int nnt)
-{
-  int i,j;
-
-REALN pin=0,bkf=0,hbkf=0,
-      mass,drc,
-      *vel,vloc[3],aloc[3];
-particle *part;
-
-for(vhc* car = &g_vehicles[0]; car < &g_vehicles[g_vehicles_count]; ++car)
-{
 pin=((float)car->cmd_accelerate)*car->accel;
 
 bkf=((float)car->cmd_brake)*car->brake;
@@ -82,7 +74,7 @@ for(j=0;j<=2;j++){
 }
 /*downforce^*/
 
-for(i=1;i<=(car->nj);i++){
+ for(i=1;i<=(car->nj);i++){
   if(((car->jfc[i])==3)||((car->jfc[i])==5)){
     addMomJoint((car->jid[i]),2,0.0,0.5*pin,0.0);
   }
@@ -94,8 +86,27 @@ for(i=1;i<=(car->nj);i++){
   if(((car->jfc[i])!=4)&&((car->jfc[i])!=5)){
     addFrictionJoint((car->jid[i]),0.5*hbkf); /*handbrake*/
   }
+ }
 }
 
+void physics_vehicle_postprocess(vhc* car)
+{
+  for(int i=1;i<=(car->nj);i++){
+    if(((car->jfc[i])==4)||((car->jfc[i])==5)){
+      rotjoint(car->jid[i],car->jax[i],1.4*tan(1.7*car->vrx));
+    }
+  }
+}
+
+/*run 1 simulation step; tstep - time step
+neartr[][] - near triangles to check for contacts; nnt - number of near triangles*/
+void runsim(REALN tstep,triangle **neartr,int nnt)
+{
+  int i,j;
+
+for(vhc* car = &g_vehicles[0]; car < &g_vehicles[g_vehicles_count]; ++car)
+{
+  physics_vehicle_process(car);
 }
 
 for(i=1;i<=nnt;i++){solveContTr(neartr[i]);}
@@ -110,9 +121,9 @@ for(vhc* car = &g_vehicles[0]; car < &g_vehicles[g_vehicles_count]; ++car)
       continue;
     }
 
-    for(int i = 1; i <= car->nob; ++i)
+    for(i = 1; i <= car->nob; ++i)
     {
-      for(int j = 1; j <= car2->nob; ++j)
+      for(j = 1; j <= car2->nob; ++j)
       {
         solveContPart(car->bid[i], car2->bid[j]);
       }
@@ -137,14 +148,15 @@ triangle *neartr[MAXCTR],*trstart,*tr;
 REALN *pos,d,dmin,dx,dy,dz;
 particle *part;
 
-for(int k=0; k<g_vehicles_count; ++k)
-{
-vhc* car = &g_vehicles[k];
 trstart=DGLOBtrstart;
-pos=DGLOBpart[car->bid[1]].pos;
 
 tr=trstart->next;
 while(tr!=0){
+ for(int k=0; k<g_vehicles_count; ++k)
+ {
+  vhc* car = &g_vehicles[k];
+  pos=DGLOBpart[car->bid[1]].pos;
+
   dx=(pos[0]-(tr->p1[0])); dy=(pos[1]-(tr->p1[1])); dz=(pos[2]-(tr->p1[2]));
   dmin=dx*dx+dy*dy+dz*dz;
   dx=(pos[0]-(tr->p2[0])); dy=(pos[1]-(tr->p2[1])); dz=(pos[2]-(tr->p2[2]));
@@ -155,19 +167,16 @@ while(tr!=0){
   if(dmin<(5.0+0.5*(tr->length))){ /*if closer than ... to nearest vertex, add triangle to checklist*/
     nnt++;
     neartr[nnt]=tr;
+    break;
   }
-  tr=tr->next;
-}
+ }
+ tr=tr->next;
 }
 
 for(int k=0; k<g_vehicles_count; ++k)
 {
- vhc* car = &g_vehicles[k];
- for(i=1;i<=(car->nj);i++){
-  if(((car->jfc[i])==4)||((car->jfc[i])==5)){
-    rotjoint(car->jid[i],car->jax[i],-1.4*tan(1.7*car->vrx));
-  }
- } /*rotate joints to steer instead of applying moment*/
+  vhc* car = &g_vehicles[k];
+  physics_vehicle_preprocess(car);
 }
 
 for(i=1;i<=nsteps;i++){
@@ -176,12 +185,8 @@ for(i=1;i<=nsteps;i++){
 
 for(int k=0; k<g_vehicles_count; ++k)
 {
- vhc* car = &g_vehicles[k];
- for(i=1;i<=(car->nj);i++){
-  if(((car->jfc[i])==4)||((car->jfc[i])==5)){
-    rotjoint(car->jid[i],car->jax[i],1.4*tan(1.7*car->vrx));
-  }
- }
+  vhc* car = &g_vehicles[k];
+  physics_vehicle_postprocess(car);
 }
 
 for(int k=0; k<g_vehicles_count; ++k)
