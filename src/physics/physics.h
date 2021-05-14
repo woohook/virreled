@@ -29,6 +29,17 @@ sintt=sin(tt);costt=cos(tt);
     jt->pos11[2]=jax[2]+(jt->pos11[2]-jax[2])*costt+(ytm-jax[1])*sintt;
 }
 
+void physics_vehicle_preprocess(vhc* car)
+{
+}
+
+void physics_vehicle_process(vhc* car)
+{
+}
+
+void physics_vehicle_postprocess(vhc* car)
+{
+}
 
 /*run 1 simulation step; tstep - time step
 neartr[][] - near triangles to check for contacts; nnt - number of near triangles*/
@@ -147,12 +158,16 @@ while(tr!=0){
   }
   tr=tr->next;
 }
+}
 
-for(i=1;i<=(car->nj);i++){
+for(int k=0; k<g_vehicles_count; ++k)
+{
+ vhc* car = &g_vehicles[k];
+ for(i=1;i<=(car->nj);i++){
   if(((car->jfc[i])==4)||((car->jfc[i])==5)){
     rotjoint(car->jid[i],car->jax[i],-1.4*tan(1.7*car->vrx));
   }
-} /*rotate joints to steer instead of applying moment*/
+ } /*rotate joints to steer instead of applying moment*/
 }
 
 for(i=1;i<=nsteps;i++){
@@ -161,16 +176,20 @@ for(i=1;i<=nsteps;i++){
 
 for(int k=0; k<g_vehicles_count; ++k)
 {
-vhc* car = &g_vehicles[k];
-for(i=1;i<=(car->nj);i++){
+ vhc* car = &g_vehicles[k];
+ for(i=1;i<=(car->nj);i++){
   if(((car->jfc[i])==4)||((car->jfc[i])==5)){
     rotjoint(car->jid[i],car->jax[i],1.4*tan(1.7*car->vrx));
   }
+ }
 }
 
-for(i=1;i<=g_vehicles[k].nob;i++){
-  j=g_vehicles[k].oid[i];
-  part=&DGLOBpart[g_vehicles[k].bid[i]];
+for(int k=0; k<g_vehicles_count; ++k)
+{
+  vhc* car = &g_vehicles[k];
+ for(i=1;i<=car->nob;i++){
+  j=car->oid[i];
+  part=&DGLOBpart[car->bid[i]];
 
   objs[j].vx[0]=objs[j].xcen=part->pos[0];
   objs[j].vy[0]=objs[j].ycen=part->pos[1];
@@ -187,7 +206,7 @@ for(i=1;i<=g_vehicles[k].nob;i++){
   objs[j].vx[3]=objs[j].vx[0]+part->vx[2];
   objs[j].vy[3]=objs[j].vy[0]+part->vy[2];
   objs[j].vz[3]=objs[j].vz[0]+part->vz[2];
-} /*calculated object positions for rendering*/
+ } /*calculated object positions for rendering*/
 }
 
 }
