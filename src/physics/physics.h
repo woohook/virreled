@@ -30,10 +30,18 @@ sintt=sin(tt);costt=cos(tt);
 }
 
 int object_turning = 0;
-void physics_object_preprocess(vhc* human)
+void physics_object_preprocess(vhc* object)
 {
-  object_turning = (object_turning - human->cmd_turn) % 256;
-  forward(human->bid[1], 6.0f*human->cmd_accelerate, object_turning, human->cmd_handbrake);
+  float speed = 6.0f * (object->cmd_accelerate - object->cmd_brake);
+  if(speed < 0)
+  {
+    object_turning = (object_turning + object->cmd_turn) % 256;
+  }
+  else
+  {
+    object_turning = (object_turning - object->cmd_turn) % 256;
+  }
+  forward(object->bid[1], speed, object_turning, object->cmd_handbrake);
 }
 
 void physics_vehicle_preprocess(vhc* car)
