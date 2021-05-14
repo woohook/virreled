@@ -61,10 +61,6 @@ if(mn<10){s[3]='0';}
 if(sc<10){s[6]='0';}
 }
 
-int turning = 0;
-int jump = 0;
-int left = 0;
-int fwd=-1;
 REALN vrotc,vrcmax,rotc; /*rot. speed and rotation of camera*/
 int camflag=2; /*number of objects and of object types*/
 vhc* g_vehicle = 0;
@@ -224,8 +220,8 @@ if(ntotrk==4){zfog=240; zmax=360;}else{zfog=80; zmax=120;}
 strcpy(numefis,pCarFile);
 objs=readvehicle(numefis,objs,&nto,&nob,&g_vehicles[0]); /*read vehicle from file*/
 
-objs=readvehicle("cars/car3",objs,&nto,&nob,&g_vehicles[1]); /*read vehicle from file*/
-setPartPos(g_vehicles[1].bid[1],2,0,24);  // move next to car
+objs=readvehicle("cars/car1",objs,&nto,&nob,&g_vehicles[1]); /*read vehicle from file*/
+setPartPos(g_vehicles[1].bid[1],1,-2,14);  // move next to car
 
 window_create(0,0,g_screen_width,g_screen_height);
 window_set_key_handler(handle_key_event);
@@ -263,12 +259,6 @@ for(i=1;i<=nob;i++){
   if(objs[i].lev==3){
     rotab(&objs[i],objs[i].vx[0],objs[i].vy[0],objs[i].vz[0],objs[i].vx[3],objs[i].vy[3],objs[i].vz[3],vrot3*tframe);
   }
-}
-
-if(fwd>-0.125)
-{
-  left = (left + turning) % 256;
-  forward(g_vehicles[1].bid[1],fwd,left,jump);
 }
 
 rdspeed(g_vehicle,&g_vehicle->speed,&g_vehicle->rotspeed,&g_vehicle->dspeed);

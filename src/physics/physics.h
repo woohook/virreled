@@ -29,8 +29,21 @@ sintt=sin(tt);costt=cos(tt);
     jt->pos11[2]=jax[2]+(jt->pos11[2]-jax[2])*costt+(ytm-jax[1])*sintt;
 }
 
+int object_turning = 0;
+void physics_object_preprocess(vhc* human)
+{
+  object_turning = (object_turning - human->cmd_turn) % 256;
+  forward(human->bid[1], 6.0f*human->cmd_accelerate, object_turning, human->cmd_handbrake);
+}
+
 void physics_vehicle_preprocess(vhc* car)
 {
+  if(car->nob == 1)
+  {
+    physics_object_preprocess(car);
+    return;
+  }
+
   for(int i=1;i<=(car->nj);i++){
     if(((car->jfc[i])==4)||((car->jfc[i])==5)){
       rotjoint(car->jid[i],car->jax[i],-1.4*tan(1.7*car->vrx));
@@ -45,6 +58,11 @@ void physics_vehicle_process(vhc* car)
         mass,drc,
         *vel,vloc[3],aloc[3];
   particle *part;
+
+  if(car->nob == 1)
+  {
+    return;
+  }
 
 pin=((float)car->cmd_accelerate)*car->accel;
 
@@ -91,6 +109,11 @@ for(j=0;j<=2;j++){
 
 void physics_vehicle_postprocess(vhc* car)
 {
+  if(car->nob == 1)
+  {
+    return;
+  }
+
   for(int i=1;i<=(car->nj);i++){
     if(((car->jfc[i])==4)||((car->jfc[i])==5)){
       rotjoint(car->jid[i],car->jax[i],1.4*tan(1.7*car->vrx));
