@@ -209,6 +209,15 @@ if(!(DGLOBjtstart=(joint *)malloc(sizeof(joint)))){printf("Out of memory"); exit
 DGLOBjtstart->next=0;
 }
 
+void getPartPos(int i,REALD* x,REALD* y,REALD* z)
+{
+  particle *part;
+  part=&DGLOBpart[i];
+
+  *x = part->pos[0];
+  *y = part->pos[1];
+  *z = part->pos[2];
+}
 
 /*set position of particle*/
 void setPartPos(int i,REALD x,REALD y,REALD z)

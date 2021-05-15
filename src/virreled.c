@@ -64,6 +64,55 @@ if(sc<10){s[6]='0';}
 REALN vrotc,vrcmax,rotc; /*rot. speed and rotation of camera*/
 int camflag=2; /*number of objects and of object types*/
 vhc* g_vehicle = 0;
+sgob *objs = 0;
+
+void vehicle_handle_switch()
+{
+    float x,y,z;
+    getPartPos(g_vehicle->bid[1],&x,&y,&z);
+    vhc* pCandidate = 0;
+    float candidateDistance = 3;  // max distance for entering a vehicle
+
+    // exit from vehicle if currently driving
+    if(g_vehicle != &g_vehicles[0])
+    {
+      g_vehicle = &g_vehicles[0];
+      int oid = g_vehicle->oid[1];
+      objs[oid].nfa = -objs[oid].nfa;
+      g_vehicle->nob = -g_vehicle->nob;
+      setPartPos(g_vehicle->bid[1],x,y-3.5f,z);
+      return;
+    }
+
+    for(vhc* pVehicle = &g_vehicles[0]; pVehicle < &g_vehicles[g_vehicles_count]; ++pVehicle)
+    {
+      if(g_vehicle == pVehicle)
+      {
+        continue;  // skip switching to self
+      }
+
+      float xx,yy,zz;
+      getPartPos(pVehicle->bid[1],&xx,&yy,&zz);
+      float dX = (x>xx) ? x-xx: xx-x;
+      float dY = (y>yy) ? y-yy: yy-y;
+      float dZ = (z>zz) ? z-zz: zz-z;
+      float dMax = (dX>dY) ? dX : dY;
+      dMax = (dMax>dZ) ? dMax : dZ;
+      if(dMax < candidateDistance)
+      {
+        pCandidate = pVehicle;
+        candidateDistance = dMax;
+      }
+    }
+
+    if(pCandidate != 0)
+    {
+      int oid = g_vehicle->oid[1];
+      objs[oid].nfa = -objs[oid].nfa;
+      g_vehicle->nob = -g_vehicle->nob;
+      g_vehicle = pCandidate;
+    }
+}
 
 int last_command_reverse = 0;
 int last_command_turn_left = 0;
@@ -76,7 +125,7 @@ void vehicle_process_input(float tframe)
   const REALN arxmax = vrxmax / 1.5;
 
   if(last_command_vehicle_switch==0 && g_command_vehicle_switch==1) {
-    g_vehicle = &g_vehicles[(g_vehicle==&g_vehicles[0]) ? 1 : 0];
+    vehicle_handle_switch();
   }
   last_command_vehicle_switch = g_command_vehicle_switch;
 
@@ -171,7 +220,7 @@ pixcol backcol; /*culoarea fundalului*/
 REALN  zfog,zmax; /*zfog,zmax - distanta de la care incepe ceatza, respectiv de la care nu se mai vede nimic*/
 lightpr light;
 
-sgob *objs,camera; /*objects*/
+sgob camera;
 int nob,nto,ntotrk;
 
 vhc car; /*vehicle*/
