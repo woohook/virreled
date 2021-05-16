@@ -84,7 +84,7 @@ void vehicle_handle_switch()
       return;
     }
 
-    for(vhc* pVehicle = &g_vehicles[0]; pVehicle < &g_vehicles[g_vehicles_count]; ++pVehicle)
+    for(vhc* pVehicle = &g_vehicles[1]; pVehicle < &g_vehicles[g_vehicles_count]; ++pVehicle)
     {
       if(g_vehicle == pVehicle)
       {
@@ -326,7 +326,7 @@ camera_process_input();
 setcamg(&camera,g_vehicle,camflag);
 
 rotc+=vrotc*tframe; if(camflag==2){rotc=0; vrotc=0;}
-if(rotc){rotatx(&camera,objs[g_vehicles[0].oid[1]].vy[0],objs[g_vehicles[0].oid[1]].vz[0],rotc);}
+if(rotc){rotatx(&camera,objs[g_vehicle->oid[1]].vy[0],objs[g_vehicle->oid[1]].vz[0],rotc);}
 
 odis(objs,nob,backcol,zfog,zmax,&camera,&light); /*display image*/
 
