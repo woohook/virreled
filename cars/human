@@ -1,0 +1,11 @@
+camera 0.7 0 0.05
+objtypes 1
+data/human.geo data/nocl.cld data/nocl.cld
+objects 1
+1 1  2.7 -0.7 13.0  0.4 0.1865 1000 0.9
+accel 6.0
+brake 0
+spring 0
+damper 0
+drag 0
+downforce 0

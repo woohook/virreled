@@ -266,7 +266,7 @@ objs=readtrack(numefis,&nob,&nto,&backcol,&light); /*read objects from file*/
 ntotrk=nto;
 if(ntotrk==4){zfog=240; zmax=360;}else{zfog=80; zmax=120;}
 
-objs=readvehicle("cars/car1",objs,&nto,&nob,&g_vehicles[0]); /*read vehicle from file*/
+objs=readvehicle("cars/human",objs,&nto,&nob,&g_vehicles[0]); /*read vehicle from file*/
 setPartPos(g_vehicles[0].bid[1],1,-2,14);  // move next to car
 
 strcpy(numefis,pCarFile);
