@@ -66,6 +66,33 @@ int camflag=2; /*number of objects and of object types*/
 vhc* g_vehicle = 0;
 sgob *objs = 0;
 
+int vehicle_exit()
+{
+  float x,y,z;
+  getPartPos(g_vehicle->bid[1],&x,&y,&z);
+
+  if(g_vehicle == &g_vehicles[0])
+  {
+    return 0;
+  }
+
+  g_vehicle = &g_vehicles[0];
+  int oid = g_vehicle->oid[1];
+  objs[oid].nfa = -objs[oid].nfa;
+  g_vehicle->nob = -g_vehicle->nob;
+  setPartPos(g_vehicle->bid[1],x,y-3.5f,z);
+
+  return 1;
+}
+
+void vehicle_enter(vhc* pVehicle)
+{
+  int oid = g_vehicles[0].oid[1];
+  objs[oid].nfa = -objs[oid].nfa;
+  g_vehicles[0].nob = -g_vehicles[0].nob;
+  g_vehicle = pVehicle;
+}
+
 void vehicle_handle_switch()
 {
     float x,y,z;
@@ -74,13 +101,8 @@ void vehicle_handle_switch()
     float candidateDistance = 3;  // max distance for entering a vehicle
 
     // exit from vehicle if currently driving
-    if(g_vehicle != &g_vehicles[0])
+    if(vehicle_exit())
     {
-      g_vehicle = &g_vehicles[0];
-      int oid = g_vehicle->oid[1];
-      objs[oid].nfa = -objs[oid].nfa;
-      g_vehicle->nob = -g_vehicle->nob;
-      setPartPos(g_vehicle->bid[1],x,y-3.5f,z);
       return;
     }
 
@@ -107,10 +129,7 @@ void vehicle_handle_switch()
 
     if(pCandidate != 0)
     {
-      int oid = g_vehicle->oid[1];
-      objs[oid].nfa = -objs[oid].nfa;
-      g_vehicle->nob = -g_vehicle->nob;
-      g_vehicle = pCandidate;
+      vehicle_enter(pCandidate);
     }
 }
 
@@ -271,6 +290,8 @@ setPartPos(g_vehicles[0].bid[1],1,-2,14);  // move next to car
 
 strcpy(numefis,pCarFile);
 objs=readvehicle(numefis,objs,&nto,&nob,&g_vehicles[1]); /*read vehicle from file*/
+
+vehicle_enter(&g_vehicles[1]);
 
 window_create(0,0,g_screen_width,g_screen_height);
 window_set_key_handler(handle_key_event);
